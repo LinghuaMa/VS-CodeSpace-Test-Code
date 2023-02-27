@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Users\v-margema\Desktop\Workspace\Test Case\test
+set VIRTUAL_ENV=C:\Users\v-margema\VS-CodeSpace-Test-Code\Test Case\test
 
 if not defined PROMPT set PROMPT=$P$G
 
