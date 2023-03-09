@@ -182,8 +182,8 @@ def test_rename_codespace(playwright: Playwright) -> None:
 
 
 
-# @pytest.mark.usereacttemplatecreatecodespace
-# def test_use_react_template_create_codespace(playwright: Playwright) -> None:
+# @pytest.mark.usereacttemplatecreatecodespace01
+# def test_use_react_template_create_codespace01(playwright: Playwright) -> None:
 #     browser = playwright.chromium.launch(headless=False)
 #     context = browser.new_context(storage_state="cway")
 #     page = context.new_page()

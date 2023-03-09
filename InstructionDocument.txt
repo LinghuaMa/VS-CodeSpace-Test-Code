@@ -1,0 +1,23 @@
+	1. Install python : https://www.python.org/downloads/
+		a. 安装首页面左下角的俩个option 全选
+		b. Advanced options 记得全选
+	2. 安装vscode：https://code.visualstudio.com/Download/
+		a. 在Visual Studio Code中搜索并安装所需语言的Extension扩展插件：Python
+		b. 创建文件夹工程并在Terminal中通过运行命令创建虚拟环境：
+		c. python -m venv <venv>
+	3. 点击右下角切换为创建的虚拟坏境并通过(Ctrl+Shift+`)快捷键打开一个新的Terminal命令框
+		a. 通过运行命令安装开发所需的插件：
+		b. pip install pytest-playwright
+		c. playwright install
+	4. 运行case：
+		a. pytest -m markcasename --headed --browser-channel msedge
+		b. pytest --headed --browser-channel msedge
+	5. 免登录cookie 的生成：
+		在ternimal 里面执行：python-m playwright cr https://github.com/codespaces cway 然后登录账号, 会在对应的目录下生成cway 文件，然后调用该文件
+			i. Eg: 
+			
+			def test_showall_codespace_template(playwright: Playwright) -> None:
+			    browser = playwright.chromium.launch(headless=False)
+			    context = browser.new_context(storage_state="cway")
+			    page = context.new_page()
+    			    page.goto("https://github.com/codespaces")

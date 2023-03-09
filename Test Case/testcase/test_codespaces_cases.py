@@ -29,10 +29,54 @@ def test_use_react_template_create_codespace(playwright: Playwright) -> None:
     sleep(30000)
     page.wait_for_timeout(20000)
 
+def test_newtemplatepage(playwright: Playwright, pageurl: string)-> Page:
+    browser = playwright.chromium.launch(headless=False)
+    context = browser.new_context(storage_state="cway")
+    page = context.new_page()
+    page.goto(pageurl)
+    return page
 
+@pytest.mark.githubhaikusforcodespaces
+def test_new_githubhaikuspage(playwright: Playwright):
+    githubhaikusurl="https://github.com/github/haikus-for-codespaces"
+    page=test_newtemplatepage(playwright,githubhaikusurl)
+    assert page.title()=="github/haikus-for-codespaces"
+    commonbuttonselector="#repo-content-pjax-container > div > div > div.Layout.Layout--flowRow-until-md.Layout--sidebarPosition-end.Layout--sidebarPosition-flowRow-end > div.Layout-main > div.file-navigation.mb-3.d-flex.flex-items-start > span:nth-child(8) > details"
+    geenusethembuttonselector=commonbuttonselector+" > summary"
+    page.locator(geenusethembuttonselector).click()
+    openincodespbuttonselector=commonbuttonselector+" > div > ul > li:nth-child(3) > form > button"
+    page.locator(openincodespbuttonselector).click()
+    assert page.wait_for_event('popup')
+    page.wait_for_timeout(2000)
+
+@pytest.mark.reacttemplatecreatecodespace
+def test_new_reacttemplatepage(playwright: Playwright):
+    reacttempurl="https://github.com/codespaces/new?template=react"
+    page=test_newtemplatepage(playwright,reacttempurl)
+    assert 'Create a new codespace' in page.text_content('h2')
+    page.wait_for_timeout(2000)
+
+@pytest.mark.checkunpublishstatus
+def test_checkunpublishstatus(playwright: Playwright):
+    haikusforcodespacesurl="https://github.com/codespaces?unpublished=true"
+    page=test_newtemplatepage(playwright,haikusforcodespacesurl)
+    assert 'Your codespaces' in page.text_content('h2')
+    # f="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > div:nth-child(3) > div > div:nth-child(2) > div > div:nth-child(1) > div:nth-child(1) > div > p"
+    b="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > div:nth-child(3) > div > div:nth-child(2) > div > div:nth-child(1) > div:nth-child(1) > div > p"
+    # d="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > div:nth-child(3) > div > div:nth-child(7) > div > div:nth-child(1) > div:nth-child(1) > div > p"
+    # e="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > div:nth-child(3) > div > div:nth-child(9) > div > div:nth-child(1) > div:nth-child(1) > div > p"
+    assert "Created from" in page.locator(b).inner_text()
+    page.wait_for_timeout(2000)
+
+@pytest.mark.haikusforcodespacesopenpage
+def test_new_haikusforcodespacespage(playwright: Playwright):
+    haikusforcodespacesurl="https://github.com/codespaces/new?template_repository=github/haikus-for-codespaces"
+    page=test_newtemplatepage(playwright,haikusforcodespacesurl)
+    assert 'Create a new codespace' in page.text_content('h2')
+    page.wait_for_timeout(2000)
 
 @pytest.mark.blanktemplatecreatecodespace
-def test_blank_template_create_codespace(playwright: Playwright) -> None:
+def test_blank_template_create_codespace_(playwright: Playwright) -> None:
     browser = playwright.chromium.launch(headless=False)
     context = browser.new_context(storage_state="cway")
     page = context.new_page()
@@ -42,10 +86,8 @@ def test_blank_template_create_codespace(playwright: Playwright) -> None:
     templatemaindiv="body > div.logged-in.env-production.page-responsive > div.application-main > main"
     blankbutton=templatemaindiv+" > new-codespace > div.js-codespaces-completable > div.Box.position-relative.container-sm > div > div > div:nth-child(3) > form > button"
     page.locator(blankbutton).click()
-    
-    # page.wait_for_url("")
-    # new_page=getnewpagebyclickusethistemplate(page)
     new_page = page.wait_for_event('popup')
+
     terminaltextarea="#terminal > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div.pane-body.shell-integration.integrated-terminal.wide > div.monaco-split-view2.horizontal > div.monaco-scrollable-element > div.split-view-container > div > div > div > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div > div > div > div.xterm-screen > div.xterm-helpers > textarea"
     new_page.type(terminaltextarea,"git status")
     new_page.keyboard.press("Enter")
@@ -67,7 +109,8 @@ def test_blank_template_create_codespace(playwright: Playwright) -> None:
     new_page.locator(newfileactionselector).click()
     new_page.keyboard.type("htmltest.html")
     new_page.keyboard.press("Enter")
-
+    new_page.wait_for_timeout(1500)
+    new_page.keyboard.press("Enter")
     new_page.keyboard.type("<html>htmltest</html>")
     sourcecontrolselector="#workbench\.parts\.activitybar > div > div.composite-bar > div > ul > li:nth-child(3) > a"
     new_page.locator(sourcecontrolselector).click()
@@ -76,27 +119,19 @@ def test_blank_template_create_codespace(playwright: Playwright) -> None:
     
     #rename reponame
     reponameselector="#js-vscode-workbench-placeholder > div > div.quick-input-widget.show-file-icons > div.quick-input-header > div.quick-input-and-message > div.quick-input-filter > div.quick-input-box > div > div.monaco-inputbox.idle > div > input"
-    # oldreponame=new_page.locator(reponameselector).input_value()
-    # guid = uuid.uuid4()
-    # new_page.locator(reponameselector).fill(oldreponame+guid)
-
+    oldreponame=new_page.locator(reponameselector).input_value()
+    guid = uuid.uuid4().hex
+    new_page.locator(reponameselector).fill(oldreponame+guid)
+    new_page.wait_for_timeout(1000)
     new_page.keyboard.press("ArrowDown")
     new_page.keyboard.press("Enter")
+    new_page.wait_for_timeout(1000)
     new_page.keyboard.press("Tab")
     new_page.keyboard.press("Enter")
+    new_page.wait_for_timeout(3000)
+    test_getgithubuserrepo(browser, oldreponame+guid)
+    page.wait_for_timeout(3000)
 
-    # test_getgithubuserrepo(browser, oldreponame+guid)
-   
-    page.wait_for_timeout(200000)
-
-@pytest.mark.generateguid
-def test_generateguid(playwright: Playwright) -> string:
-    browser = playwright.chromium.launch(headless=False)
-    page = browser.new_page()
-    page.goto("https://github.com/Chaoyun8888/codespaces-blank1")
-    # generate a guid
-    guid = uuid.uuid4()
-    return guid
 
 @pytest.mark.getgithubuserrepo
 def test_getgithubuserrepo(browser: Browser, reponame: string):
