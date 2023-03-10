@@ -13,7 +13,7 @@
 		a. pytest -m markcasename --headed --browser-channel msedge
 		b. pytest --headed --browser-channel msedge
 	5. 免登录cookie 的生成：
-		在ternimal 里面执行：python-m playwright cr https://github.com/codespaces cway 然后登录账号, 会在对应的目录下生成cway 文件，然后调用该文件
+		在ternimal 里面执行：python -m playwright cr https://github.com/codespaces  --save-storage cwayma  然后登录账号, 会在对应的目录下生成cway 文件，然后调用该文件
 			i. Eg: 
 			
 			def test_showall_codespace_template(playwright: Playwright) -> None:

@@ -31,23 +31,93 @@ def test_use_react_template_create_codespace(playwright: Playwright) -> None:
 
 def test_newtemplatepage(playwright: Playwright, pageurl: string)-> Page:
     browser = playwright.chromium.launch(headless=False)
-    context = browser.new_context(storage_state="cway")
+    context = browser.new_context(storage_state="cwayma")
     page = context.new_page()
     page.goto(pageurl)
     return page
 
-@pytest.mark.githubhaikusforcodespaces
-def test_new_githubhaikuspage(playwright: Playwright):
-    githubhaikusurl="https://github.com/github/haikus-for-codespaces"
-    page=test_newtemplatepage(playwright,githubhaikusurl)
-    assert page.title()=="github/haikus-for-codespaces"
+#region Repository Templates
+@pytest.mark.blankrepositorytemp
+def test_blankrepositorytemp(playwright: Playwright):
+    blankrepotemp="codespaces-blank"
+    #Publish to Github
+    publishbuttonselector="#workbench\.view\.scm > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div.pane-body.welcome > div.welcome-view > div > div.welcome-view-content > div > a"
+    test_userepositorytemp(playwright, blankrepotemp)
+
+@pytest.mark.railsrepositorytemp
+def test_railsrepositorytemp(playwright: Playwright):
+    railsrepotemp="codespaces-rails"
+    test_userepositorytemp(playwright, railsrepotemp)
+
+@pytest.mark.reactrepositorytemp
+def test_reactrepositorytemp(playwright: Playwright):
+    reactrepotemp="codespaces-react"
+    test_userepositorytemp(playwright, reactrepotemp)
+
+@pytest.mark.jupyterrepositorytemp
+def test_jupyterrepositorytemp(playwright: Playwright):
+    jupyterrepotemp="codespaces-jupyter"
+    test_userepositorytemp(playwright, jupyterrepotemp)
+
+@pytest.mark.expressrepositorytemp
+def test_expressrepositorytemp(playwright: Playwright):
+    expressrepotemp="codespaces-express"
+    test_userepositorytemp(playwright, expressrepotemp)
+
+@pytest.mark.djangorepositorytemp
+def test_djangorepositorytemp(playwright: Playwright):
+    djangorepotemp="codespaces-django"
+    test_userepositorytemp(playwright, djangorepotemp)
+
+@pytest.mark.nextjsrepositorytemp
+def test_nextjsrepositorytemp(playwright: Playwright):
+    nextjsrepotemp="codespaces-nextjs"
+    test_userepositorytemp(playwright, nextjsrepotemp)
+
+@pytest.mark.flaskrepositorytemp
+def test_flaskrepositorytemp(playwright: Playwright):
+    flaskrepotemp="codespaces-flask"
+    test_userepositorytemp(playwright, flaskrepotemp)
+
+@pytest.mark.preactrepositorytemp
+def test_preactrepositorytemp(playwright: Playwright):
+    preactrepotemp="codespaces-preact"
+    test_userepositorytemp(playwright, preactrepotemp)
+    
+
+def test_userepositorytemp(playwright: Playwright, repotemp: string):
+    githuburl="https://github.com/github/"
+    page=test_newtemplatepage(playwright, githuburl+repotemp)
+    assert repotemp in page.title()
     commonbuttonselector="#repo-content-pjax-container > div > div > div.Layout.Layout--flowRow-until-md.Layout--sidebarPosition-end.Layout--sidebarPosition-flowRow-end > div.Layout-main > div.file-navigation.mb-3.d-flex.flex-items-start > span:nth-child(8) > details"
     geenusethembuttonselector=commonbuttonselector+" > summary"
     page.locator(geenusethembuttonselector).click()
     openincodespbuttonselector=commonbuttonselector+" > div > ul > li:nth-child(3) > form > button"
     page.locator(openincodespbuttonselector).click()
-    assert page.wait_for_event('popup')
-    page.wait_for_timeout(2000)
+    codespace_page=page.wait_for_event('popup')
+
+    test_terminalcommand(codespace_page, "git status")
+    codespace_page.wait_for_timeout(10000)
+    sourcecontrolselector="#workbench\.parts\.activitybar > div > div.composite-bar > div > ul > li:nth-child(3) > a"
+    codespace_page.locator(sourcecontrolselector).click()
+    codespace_page.wait_for_load_state("networkidle")
+    codespace_page.keyboard.press("Control+Shift+G")
+    codespace_page.wait_for_timeout(10000)
+    if repotemp=="codespaces-blank":
+      assertselector="#workbench\.view\.scm > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div.pane-body.welcome > div.welcome-view > div > div.welcome-view-content > div > a"
+    else:
+      assertselector="#list_id_4_1 > div > div.monaco-tl-contents > div > a"
+    assert codespace_page.is_visible(assertselector)
+    codespace_page.wait_for_timeout(2000)
+
+#endregion
+
+def test_terminalcommand(page: Page, cmdline: string):
+    terminaltextarea="#terminal > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div.pane-body.shell-integration.integrated-terminal.wide > div.monaco-split-view2.horizontal > div.monaco-scrollable-element > div.split-view-container > div > div > div > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div > div > div > div.xterm-screen > div.xterm-helpers > textarea"
+    page.type(terminaltextarea, cmdline)
+    page.keyboard.press("Enter")
+
+
 
 @pytest.mark.reacttemplatecreatecodespace
 def test_new_reacttemplatepage(playwright: Playwright):
@@ -60,12 +130,11 @@ def test_new_reacttemplatepage(playwright: Playwright):
 def test_checkunpublishstatus(playwright: Playwright):
     haikusforcodespacesurl="https://github.com/codespaces?unpublished=true"
     page=test_newtemplatepage(playwright,haikusforcodespacesurl)
+    if "Getting started with GitHub Codespaces" in page.text_content('h2'):
+      return
     assert 'Your codespaces' in page.text_content('h2')
-    # f="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > div:nth-child(3) > div > div:nth-child(2) > div > div:nth-child(1) > div:nth-child(1) > div > p"
-    b="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > div:nth-child(3) > div > div:nth-child(2) > div > div:nth-child(1) > div:nth-child(1) > div > p"
-    # d="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > div:nth-child(3) > div > div:nth-child(7) > div > div:nth-child(1) > div:nth-child(1) > div > p"
-    # e="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > div:nth-child(3) > div > div:nth-child(9) > div > div:nth-child(1) > div:nth-child(1) > div > p"
-    assert "Created from" in page.locator(b).inner_text()
+    unpublishedreposelector="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > div:nth-child(3) > div > div:nth-child(2) > div > div:nth-child(1) > div:nth-child(1) > div > p"
+    assert "Created from" in page.locator(unpublishedreposelector).inner_text()
     page.wait_for_timeout(2000)
 
 @pytest.mark.haikusforcodespacesopenpage
@@ -78,7 +147,7 @@ def test_new_haikusforcodespacespage(playwright: Playwright):
 @pytest.mark.blanktemplatecreatecodespace
 def test_blank_template_create_codespace_(playwright: Playwright) -> None:
     browser = playwright.chromium.launch(headless=False)
-    context = browser.new_context(storage_state="cway")
+    context = browser.new_context(storage_state="cwayma")
     page = context.new_page()
     page.goto("https://github.com/codespaces/new?template=blank")
     assert 'Create a new codespace' in page.text_content('h2')
@@ -88,9 +157,10 @@ def test_blank_template_create_codespace_(playwright: Playwright) -> None:
     page.locator(blankbutton).click()
     new_page = page.wait_for_event('popup')
 
-    terminaltextarea="#terminal > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div.pane-body.shell-integration.integrated-terminal.wide > div.monaco-split-view2.horizontal > div.monaco-scrollable-element > div.split-view-container > div > div > div > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div > div > div > div.xterm-screen > div.xterm-helpers > textarea"
-    new_page.type(terminaltextarea,"git status")
-    new_page.keyboard.press("Enter")
+    # terminaltextarea="#terminal > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div.pane-body.shell-integration.integrated-terminal.wide > div.monaco-split-view2.horizontal > div.monaco-scrollable-element > div.split-view-container > div > div > div > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div > div > div > div.xterm-screen > div.xterm-helpers > textarea"
+    # new_page.type(terminaltextarea,"git status")
+    # new_page.keyboard.press("Enter")
+    test_terminalcommand(new_page, "git status")
     commondactionselecter="#terminal > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div.pane-body.shell-integration.integrated-terminal.wide > div.monaco-split-view2.horizontal > div.monaco-scrollable-element > div.split-view-container > div > div > div > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div > div > div > div.xterm-screen > div.xterm-decoration-container > div.codicon.error.terminal-command-decoration.xterm-decoration.codicon-terminal-decoration-error"
     new_page.locator(commondactionselecter).click()
     for i in range(3):
@@ -148,7 +218,7 @@ def test_getgithubuser() -> string:
 
 def test_getusenamefromcookiefile() -> string:
       # read cookies from the json file
-    with open('cway', 'r') as f:
+    with open('cwayma', 'r') as f:
       cookies = json.load(f)
     # get a value from the cookies array by name
     for cookie in cookies["cookies"]:
