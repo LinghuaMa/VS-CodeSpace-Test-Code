@@ -36,12 +36,67 @@ def test_newtemplatepage(playwright: Playwright, pageurl: string)-> Page:
     page.goto(pageurl)
     return page
 
+#region Export/Publish from /Codespaces
+@pytest.mark.blankrepositorytemp
+def test_blanktemppublishcodespace(playwright: Playwright):
+    usethistempbuttonselector="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > codespace-zero-config > ol > li:nth-child(1) > div > div:nth-child(3) > form > button"
+    test_repositorytempandexportcodespace(playwright, usethistempbuttonselector, "blank")
+
+@pytest.mark.reactrepositorytemp
+def test_reacttemppublishcodespace(playwright: Playwright):
+    usethistempbuttonselector="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > codespace-zero-config > ol > li:nth-child(3) > div > div:nth-child(3) > form > button"
+    test_repositorytempandexportcodespace(playwright, usethistempbuttonselector, "react")
+
+@pytest.mark.railsrepositorytemp
+def test_railstemppublishcodespace(playwright: Playwright):
+    usethistempbuttonselector="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > codespace-zero-config > ol > li:nth-child(2) > div > div:nth-child(3) > form > button"
+    test_repositorytempandexportcodespace(playwright, usethistempbuttonselector, "rails")
+
+@pytest.mark.jupyterrepositorytemp
+def test_jupytertemppublishcodespace(playwright: Playwright):
+    usethistempbuttonselector="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > codespace-zero-config > ol > li:nth-child(4) > div > div:nth-child(3) > form > button"
+    test_repositorytempandexportcodespace(playwright, usethistempbuttonselector, "jupyter")
+
+def test_repositorytempandexportcodespace(playwright: Playwright, buttonselector: string, tempname: string):
+    buttonselector
+    tempurl="https://github.com/codespaces/templates"
+    page=test_newtemplatepage(playwright, tempurl)
+    assert "Choose a template" in page.text_content('h1')
+
+    ppeselector="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > codespace-zero-config > div > div:nth-child(2) > div > select"
+    page.locator(ppeselector).click()
+    page.keyboard.press("ArrowDown")
+    page.keyboard.press("Enter")
+    assert page.locator(ppeselector).input_value()=="ppe"
+    
+    page.locator(buttonselector).click()
+    codespace_page=page.wait_for_event('popup')
+    
+    test_terminalcommand(codespace_page, "git status")
+    test_validatepublishbutton(codespace_page, tempname)
+    
+    # Export/Publish from /Codespaces
+    # gitcodespacehomeurl="https://github.com/codespaces?unpublished=true"
+    page.goto("https://github.com/codespaces?unpublished=true")
+    spaceconfig='body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > div:nth-child(3) > div > div.Box-row > div > div:nth-child(2) > div > div.right-0.top-0.top-lg-auto.right-lg-auto.position-absolute.position-lg-relative > options-popover>details:nth-child(1)'
+    summaryselector=spaceconfig+">summary"
+    page.query_selector_all(summaryselector)[0].click()
+    publishareposelector=spaceconfig+"> details-menu > button:nth-child(4) > span"
+    page.query_selector_all(publishareposelector)[0].click()
+    page.wait_for_timeout(1000)
+    publishreponameselector="#publish-codespace-repo-name"
+    guid = uuid.uuid4().hex
+    page.query_selector_all(publishreponameselector)[0].fill(tempname+guid)
+    button="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > div:nth-child(3) > div > div:nth-child(2) > div > div:nth-child(2) > div > div.right-0.top-0.top-lg-auto.right-lg-auto.position-absolute.position-lg-relative > options-popover > details:nth-child(3) > details-dialog>div:nth-child(3)>export-branch>div>form>button"
+    page.query_selector_all(button)[0].click()
+    test_getgithubuserrepo(page, tempname+guid)
+    page.wait_for_timeout(3000)
+#endregion Export/Publish from /Codespaces
+
 #region Repository Templates
 @pytest.mark.blankrepositorytemp
 def test_blankrepositorytemp(playwright: Playwright):
     blankrepotemp="codespaces-blank"
-    #Publish to Github
-    publishbuttonselector="#workbench\.view\.scm > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div.pane-body.welcome > div.welcome-view > div > div.welcome-view-content > div > a"
     test_userepositorytemp(playwright, blankrepotemp)
 
 @pytest.mark.railsrepositorytemp
@@ -95,21 +150,25 @@ def test_userepositorytemp(playwright: Playwright, repotemp: string):
     openincodespbuttonselector=commonbuttonselector+" > div > ul > li:nth-child(3) > form > button"
     page.locator(openincodespbuttonselector).click()
     codespace_page=page.wait_for_event('popup')
+    page.close()
 
     test_terminalcommand(codespace_page, "git status")
+    test_validatepublishbutton(codespace_page, repotemp)
+
+def test_validatepublishbutton(codespace_page: Page, repotemp: string):
     codespace_page.wait_for_timeout(10000)
     sourcecontrolselector="#workbench\.parts\.activitybar > div > div.composite-bar > div > ul > li:nth-child(3) > a"
     codespace_page.locator(sourcecontrolselector).click()
     codespace_page.wait_for_load_state("networkidle")
     codespace_page.keyboard.press("Control+Shift+G")
     codespace_page.wait_for_timeout(10000)
-    if repotemp=="codespaces-blank":
+    if "blank" in repotemp:
       assertselector="#workbench\.view\.scm > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div.pane-body.welcome > div.welcome-view > div > div.welcome-view-content > div > a"
     else:
       assertselector="#list_id_4_1 > div > div.monaco-tl-contents > div > a"
     assert codespace_page.is_visible(assertselector)
     codespace_page.wait_for_timeout(2000)
-
+    codespace_page.close()
 #endregion
 
 def test_terminalcommand(page: Page, cmdline: string):
@@ -117,14 +176,135 @@ def test_terminalcommand(page: Page, cmdline: string):
     page.type(terminaltextarea, cmdline)
     page.keyboard.press("Enter")
 
-
+#region Vanity URLs
+@pytest.mark.blanktemplatecreatecodespace
+def test_new_blanktemplatepage(playwright: Playwright):
+    blanktempurl="https://github.com/codespaces/new?template=blank"
+    page=test_newtemplatepage(playwright,blanktempurl)
+    assert 'Blank' in page.text_content('h5')
+    page.wait_for_timeout(2000)
 
 @pytest.mark.reacttemplatecreatecodespace
 def test_new_reacttemplatepage(playwright: Playwright):
     reacttempurl="https://github.com/codespaces/new?template=react"
     page=test_newtemplatepage(playwright,reacttempurl)
-    assert 'Create a new codespace' in page.text_content('h2')
+    assert 'React' in page.text_content('h5')
     page.wait_for_timeout(2000)
+
+@pytest.mark.railstemplatecreatecodespace
+def test_new_railstemplatepage(playwright: Playwright):
+    railstempurl="https://github.com/codespaces/new?template=rails"
+    page=test_newtemplatepage(playwright,railstempurl)
+    assert 'Ruby on Rails' in page.text_content('h5')
+    page.wait_for_timeout(2000)
+
+@pytest.mark.jupytertemplatecreatecodespace
+def test_new_jupytertemplatepage(playwright: Playwright):
+    jupytertempurl="https://github.com/codespaces/new?template=jupyter"
+    page=test_newtemplatepage(playwright,jupytertempurl)
+    assert 'Jupyter Notebook' in page.text_content('h5')
+    page.wait_for_timeout(2000)
+
+@pytest.mark.expresstemplatecreatecodespace
+def test_new_expresstemplatepage(playwright: Playwright):
+    expresstempurl="https://github.com/codespaces/new?template=express"
+    page=test_newtemplatepage(playwright,expresstempurl)
+    assert 'Express' in page.text_content('h5')
+    page.wait_for_timeout(2000)
+
+@pytest.mark.nextjstemplatecreatecodespace
+def test_new_nextjstemplatepage(playwright: Playwright):
+    nextjstempurl="https://github.com/codespaces/new?template=nextjs"
+    page=test_newtemplatepage(playwright,nextjstempurl)
+    assert 'Next.js' in page.text_content('h5')
+    page.wait_for_timeout(2000)
+
+@pytest.mark.djangotemplatecreatecodespace
+def test_new_djangotemplatepage(playwright: Playwright):
+    djangotempurl="https://github.com/codespaces/new?template=django"
+    page=test_newtemplatepage(playwright,djangotempurl)
+    assert 'Django' in page.text_content('h5')
+    page.wait_for_timeout(2000)
+
+@pytest.mark.flasktemplatecreatecodespace
+def test_new_flasktemplatepage(playwright: Playwright):
+    flasktempurl="https://github.com/codespaces/new?template=flask"
+    page=test_newtemplatepage(playwright,flasktempurl)
+    assert 'Flask' in page.text_content('h5')
+    page.wait_for_timeout(2000)
+
+@pytest.mark.preacttemplatecreatecodespace
+def test_new_preacttemplatepage(playwright: Playwright):
+    preacttempurl="https://github.com/codespaces/new?template=preact"
+    page=test_newtemplatepage(playwright,preacttempurl)
+    assert 'Preact' in page.text_content('h5')
+    page.wait_for_timeout(2000)
+#endregion anity URLs
+
+#region Slightly-less-vanity URLs 
+@pytest.mark.blankcodespacesopenpage
+def test_blnkcodespacespage(playwright: Playwright):
+    blankcodespacesurl="https://github.com/codespaces/new?template_repository=github/codespaces-blank"
+    page=test_newtemplatepage(playwright,blankcodespacesurl)
+    assert 'Blank' in page.text_content('h5')
+    page.wait_for_timeout(2000)
+
+@pytest.mark.railscodespacesopenpage
+def test_railscodespacespage(playwright: Playwright):
+    railscodespacesurl="https://github.com/codespaces/new?template_repository=github/codespaces-rails"
+    page=test_newtemplatepage(playwright,railscodespacesurl)
+    assert 'Ruby on Rails' in page.text_content('h5')
+    page.wait_for_timeout(2000)
+
+@pytest.mark.reactcodespacesopenpage
+def test_reactcodespacespage(playwright: Playwright):
+    reactcodespacesurl="https://github.com/codespaces/new?template_repository=github/codespaces-react"
+    page=test_newtemplatepage(playwright,reactcodespacesurl)
+    assert 'React' in page.text_content('h5')
+    page.wait_for_timeout(2000)
+
+@pytest.mark.jupytercodespacesopenpage
+def test_jupytercodespacespage(playwright: Playwright):
+    jupytercodespacesurl="https://github.com/codespaces/new?template_repository=github/codespaces-jupyter"
+    page=test_newtemplatepage(playwright,jupytercodespacesurl)
+    assert 'Jupyter Notebook' in page.text_content('h5')
+    page.wait_for_timeout(2000)
+
+@pytest.mark.expresscodespacesopenpage
+def test_expresscodespacespage(playwright: Playwright):
+    expresscodespacesurl="https://github.com/codespaces/new?template_repository=github/codespaces-express"
+    page=test_newtemplatepage(playwright,expresscodespacesurl)
+    assert 'Express' in page.text_content('h5')
+    page.wait_for_timeout(2000)
+
+@pytest.mark.nextjscodespacesopenpage
+def test_nextjscodespacespage(playwright: Playwright):
+    nextjscodespacesurl="https://github.com/codespaces/new?template_repository=github/codespaces-nextjs"
+    page=test_newtemplatepage(playwright,nextjscodespacesurl)
+    assert 'Next.js' in page.text_content('h5')
+    page.wait_for_timeout(2000)
+
+@pytest.mark.djangocodespacesopenpage
+def test_djangocodespacespage(playwright: Playwright):
+    djangocodespacesurl="https://github.com/codespaces/new?template_repository=github/codespaces-django"
+    page=test_newtemplatepage(playwright,djangocodespacesurl)
+    assert 'Django' in page.text_content('h5')
+    page.wait_for_timeout(2000)
+
+@pytest.mark.flaskcodespacesopenpage
+def test_flaskcodespacespage(playwright: Playwright):
+    flaskcodespacesurl="https://github.com/codespaces/new?template_repository=github/codespaces-flask"
+    page=test_newtemplatepage(playwright,flaskcodespacesurl)
+    assert 'Flask' in page.text_content('h5')
+    page.wait_for_timeout(2000)  
+
+@pytest.mark.preactcodespacesopenpage
+def test_preactcodespacespage(playwright: Playwright):
+    preactcodespacesurl="https://github.com/codespaces/new?template_repository=github/codespaces-preact"
+    page=test_newtemplatepage(playwright,preactcodespacesurl)
+    assert 'Preact' in page.text_content('h5')
+    page.wait_for_timeout(2000)  
+#endregion Slightly-less-vanity URLs 
 
 @pytest.mark.checkunpublishstatus
 def test_checkunpublishstatus(playwright: Playwright):
@@ -137,13 +317,7 @@ def test_checkunpublishstatus(playwright: Playwright):
     assert "Created from" in page.locator(unpublishedreposelector).inner_text()
     page.wait_for_timeout(2000)
 
-@pytest.mark.haikusforcodespacesopenpage
-def test_new_haikusforcodespacespage(playwright: Playwright):
-    haikusforcodespacesurl="https://github.com/codespaces/new?template_repository=github/haikus-for-codespaces"
-    page=test_newtemplatepage(playwright,haikusforcodespacesurl)
-    assert 'Create a new codespace' in page.text_content('h2')
-    page.wait_for_timeout(2000)
-
+#region Blank Template
 @pytest.mark.blanktemplatecreatecodespace
 def test_blank_template_create_codespace_(playwright: Playwright) -> None:
     browser = playwright.chromium.launch(headless=False)
@@ -157,9 +331,6 @@ def test_blank_template_create_codespace_(playwright: Playwright) -> None:
     page.locator(blankbutton).click()
     new_page = page.wait_for_event('popup')
 
-    # terminaltextarea="#terminal > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div.pane-body.shell-integration.integrated-terminal.wide > div.monaco-split-view2.horizontal > div.monaco-scrollable-element > div.split-view-container > div > div > div > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div > div > div > div.xterm-screen > div.xterm-helpers > textarea"
-    # new_page.type(terminaltextarea,"git status")
-    # new_page.keyboard.press("Enter")
     test_terminalcommand(new_page, "git status")
     commondactionselecter="#terminal > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div.pane-body.shell-integration.integrated-terminal.wide > div.monaco-split-view2.horizontal > div.monaco-scrollable-element > div.split-view-container > div > div > div > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div > div > div > div.xterm-screen > div.xterm-decoration-container > div.codicon.error.terminal-command-decoration.xterm-decoration.codicon-terminal-decoration-error"
     new_page.locator(commondactionselecter).click()
@@ -199,13 +370,14 @@ def test_blank_template_create_codespace_(playwright: Playwright) -> None:
     new_page.keyboard.press("Tab")
     new_page.keyboard.press("Enter")
     new_page.wait_for_timeout(3000)
-    test_getgithubuserrepo(browser, oldreponame+guid)
-    page.wait_for_timeout(3000)
 
+    test_getgithubuserrepo(page, oldreponame+guid)
+    page.wait_for_timeout(3000)
+#endregion Blank Template
 
 @pytest.mark.getgithubuserrepo
-def test_getgithubuserrepo(browser: Browser, reponame: string):
-    page = browser.new_page()
+def test_getgithubuserrepo(page: Page, reponame: string):
+    # page = browser.new_page()
     page.goto(test_getgithubuser()+"/"+reponame)
     # assert that a link exists on the page
     assert reponame in page.title()
@@ -217,14 +389,18 @@ def test_getgithubuser() -> string:
 
 
 def test_getusenamefromcookiefile() -> string:
-      # read cookies from the json file
+    # read cookies from the json file
     with open('cwayma', 'r') as f:
       cookies = json.load(f)
     # get a value from the cookies array by name
     for cookie in cookies["cookies"]:
       if cookie['name'] == 'dotcom_user':
         return cookie['value']
-        
+
+#region Export/Publish from /Codespaces
+# def test_blanktemppublishtorepo(playwright: Playwright):
+
+# endregion      
 
 
 # def getnewpagebyclickusethistemplate(page) -> page:
