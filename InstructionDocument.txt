@@ -21,3 +21,26 @@
 			    context = browser.new_context(storage_state="cway")
 			    page = context.new_page()
     			    page.goto("https://github.com/codespaces")
+
+Allure 安装：
+	1. 安装JDK；并且确保JDK 的环境变量配置；
+	2. 安装Alluree:
+		
+		a. 从GitHub或者Allure官网下载安装包（Zip压缩包即可）:
+		b. GitHub地址： https://github.com/allure-framework/allure2/releases 
+		c. Allure官网地址： https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/
+		d. 解压 -> 进入bin目录 -> 运行allure.bat （一般可解压到python安装路径的根目录下）
+		e. 把bin目录加入PATH环境变量
+		f. 安装 allure-pytest插件：pip install allure-pytest
+	• Allure使用：
+	     安装完成后通过以下命令生成测试报告：
+	     pytest <测试用例> -s -q --alluredir=<测试报告路径>
+	     Example: pytest ./testcase/template/test_vanityurl.py -s -q --alluredir=./testresult
+	运行template 文件夹下的用@pytest.mark 标记为：flasktemplate or preacttemplate 的case：
+	pytest ./testcase/template/ -m "flasktemplate or preacttemplate" -s -q --alluredir=./testresult01
+
+      pytest ./testcase/template/ -m "blanktemplate or railstemplate or reacttemplate or jupytertemplate or expresstemplate or nextjstemplate or djangotemplate or flasktemplate or preacttemplate" -s -q --alluredir=./testresult01
+
+• 查看Allure测试报告：
+  通过以下命令直接打开默认浏览器展示报告
+      allure serve ./testresult01/

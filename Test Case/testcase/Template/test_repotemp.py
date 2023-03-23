@@ -6,52 +6,51 @@ from playwright.async_api import Page, Playwright, Browser
 from test_commoncode import test_newtemplatepage,test_terminalcommand,test_getgithubuserrepo
 
 #region Repository Templates
-@pytest.mark.blankrepositorytemp
-def test_blankrepositorytemp(playwright: Playwright):
+@pytest.mark.blanktemplate
+def test_blankRepositoryTemplates(playwright: Playwright):
     blankrepotemp="codespaces-blank"
     test_userepositorytemp(playwright, blankrepotemp)
 
-@pytest.mark.railsrepositorytemp
-def test_railsrepositorytemp(playwright: Playwright):
+@pytest.mark.railstemplate
+def test_railsRepositoryTemplates(playwright: Playwright):
     railsrepotemp="codespaces-rails"
     test_userepositorytemp(playwright, railsrepotemp)
 
-@pytest.mark.reactrepositorytemp
-def test_reactrepositorytemp(playwright: Playwright):
+@pytest.mark.reacttemplate
+def test_reactRepositoryTemplates(playwright: Playwright):
     reactrepotemp="codespaces-react"
     test_userepositorytemp(playwright, reactrepotemp)
 
-@pytest.mark.jupyterrepositorytemp
-def test_jupyterrepositorytemp(playwright: Playwright):
+@pytest.mark.jupytertemplate
+def test_jupyterRepositoryTemplates(playwright: Playwright):
     jupyterrepotemp="codespaces-jupyter"
     test_userepositorytemp(playwright, jupyterrepotemp)
 
-@pytest.mark.expressrepositorytemp
-def test_expressrepositorytemp(playwright: Playwright):
+@pytest.mark.expresstemplate
+def test_expressRepositoryTemplates(playwright: Playwright):
     expressrepotemp="codespaces-express"
     test_userepositorytemp(playwright, expressrepotemp)
 
-@pytest.mark.djangorepositorytemp
-def test_djangorepositorytemp(playwright: Playwright):
+@pytest.mark.djangotemplate
+def test_djangoRepositoryTemplates(playwright: Playwright):
     djangorepotemp="codespaces-django"
     test_userepositorytemp(playwright, djangorepotemp)
 
-@pytest.mark.nextjsrepositorytemp
-def test_nextjsrepositorytemp(playwright: Playwright):
+@pytest.mark.nextjstemplate
+def test_nextjsRepositoryTemplates(playwright: Playwright):
     nextjsrepotemp="codespaces-nextjs"
     test_userepositorytemp(playwright, nextjsrepotemp)
 
-@pytest.mark.flaskrepositorytemp
-def test_flaskrepositorytemp(playwright: Playwright):
+@pytest.mark.flasktemplate
+def test_flaskRepositoryTemplates(playwright: Playwright):
     flaskrepotemp="codespaces-flask"
     test_userepositorytemp(playwright, flaskrepotemp)
 
-@pytest.mark.preactrepositorytemp
-def test_preactrepositorytemp(playwright: Playwright):
+@pytest.mark.preacttemplate
+def test_preactRepositoryTemplates(playwright: Playwright):
     preactrepotemp="codespaces-preact"
     test_userepositorytemp(playwright, preactrepotemp)
     
-
 def test_userepositorytemp(playwright: Playwright, repotemp: string):
     githuburl="https://github.com/github/"
     page=test_newtemplatepage(playwright, githuburl+repotemp)

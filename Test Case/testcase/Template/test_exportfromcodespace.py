@@ -6,47 +6,47 @@ from playwright.async_api import Page, Playwright, Browser
 from test_commoncode import test_newtemplatepage,test_terminalcommand,test_getgithubuserrepo
 
 #region Export/Publish from /Codespaces
-@pytest.mark.blankrepositorytemp
+@pytest.mark.blanktemplate
 def test_blanktemppublishcodespace(playwright: Playwright):
     usethistempbuttonselector="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > codespace-zero-config > ol > li:nth-child(1) > div > div:nth-child(3) > form > button"
     test_repositorytempandexportcodespace(playwright, usethistempbuttonselector, "blank")
 
-@pytest.mark.reactrepositorytemp
+@pytest.mark.reacttemplate
 def test_reacttemppublishcodespace(playwright: Playwright):
     usethistempbuttonselector="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > codespace-zero-config > ol > li:nth-child(3) > div > div:nth-child(3) > form > button"
     test_repositorytempandexportcodespace(playwright, usethistempbuttonselector, "react")
 
-@pytest.mark.railsrepositorytemp
+@pytest.mark.railstemplate
 def test_railstemppublishcodespace(playwright: Playwright):
     usethistempbuttonselector="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > codespace-zero-config > ol > li:nth-child(2) > div > div:nth-child(3) > form > button"
     test_repositorytempandexportcodespace(playwright, usethistempbuttonselector, "rails")
 
-@pytest.mark.jupyterrepositorytemp
+@pytest.mark.jupytertemplate
 def test_jupytertemppublishcodespace(playwright: Playwright):
     usethistempbuttonselector="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > codespace-zero-config > ol > li:nth-child(4) > div > div:nth-child(3) > form > button"
     test_repositorytempandexportcodespace(playwright, usethistempbuttonselector, "jupyter")
 
-@pytest.mark.expressrepositorytemp
+@pytest.mark.expresstemplate
 def test_expresstemppublishcodespace(playwright: Playwright):
     usethistempbuttonselector="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > codespace-zero-config > ol > li:nth-child(5) > div > div:nth-child(3) > form > button"
     test_repositorytempandexportcodespace(playwright, usethistempbuttonselector, "express")
 
-@pytest.mark.nextjsrepositorytemp
+@pytest.mark.nextjstemplate
 def test_nextjstemppublishcodespace(playwright: Playwright):
     usethistempbuttonselector="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > codespace-zero-config > ol > li:nth-child(6) > div > div:nth-child(3) > form > button"
     test_repositorytempandexportcodespace(playwright, usethistempbuttonselector, "nextjs")
 
-@pytest.mark.djangorepositorytemp
+@pytest.mark.djangotemplate
 def test_djangotemppublishcodespace(playwright: Playwright):
     usethistempbuttonselector="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > codespace-zero-config > ol > li:nth-child(7) > div > div:nth-child(3) > form > button"
     test_repositorytempandexportcodespace(playwright, usethistempbuttonselector, "django")
 
-@pytest.mark.flaskrepositorytemp
+@pytest.mark.flasktemplate
 def test_flasktemppublishcodespace(playwright: Playwright):
     usethistempbuttonselector="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > codespace-zero-config > ol > li:nth-child(8) > div > div:nth-child(3) > form > button"
     test_repositorytempandexportcodespace(playwright, usethistempbuttonselector, "flask")
 
-@pytest.mark.preactrepositorytemp
+@pytest.mark.preacttemplate
 def test_preacttemppublishcodespace(playwright: Playwright):
     usethistempbuttonselector="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > codespace-zero-config > ol > li:nth-child(9) > div > div:nth-child(3) > form > button"
     test_repositorytempandexportcodespace(playwright, usethistempbuttonselector, "preact")
@@ -83,4 +83,20 @@ def test_repositorytempandexportcodespace(playwright: Playwright, buttonselector
     page.query_selector_all(button)[0].click()
     test_getgithubuserrepo(page, tempname+guid)
     page.wait_for_timeout(3000)
+
+def test_validatepublishbutton(codespace_page: Page, repotemp: string):
+    codespace_page.wait_for_timeout(10000)
+    sourcecontrolselector="#workbench\.parts\.activitybar > div > div.composite-bar > div > ul > li:nth-child(3) > a"
+    codespace_page.locator(sourcecontrolselector).click()
+    codespace_page.wait_for_load_state("networkidle")
+    codespace_page.keyboard.press("Control+Shift+G")
+    codespace_page.wait_for_timeout(10000)
+    if "blank" in repotemp:
+      assertselector="#workbench\.view\.scm > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div.pane-body.welcome > div.welcome-view > div > div.welcome-view-content > div > a"
+    else:
+      assertselector="#list_id_4_1 > div > div.monaco-tl-contents > div > a"
+    assert codespace_page.is_visible(assertselector)
+    codespace_page.wait_for_timeout(2000)
+    codespace_page.close()
+
 #endregion Export/Publish from /Codespaces

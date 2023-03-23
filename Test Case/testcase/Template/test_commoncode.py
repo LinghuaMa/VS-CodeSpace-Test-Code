@@ -16,15 +16,18 @@ def test_terminalcommand(page: Page, cmdline: string):
     page.type(terminaltextarea, cmdline)
     page.keyboard.press("Enter")
 
-def test_terminalothertemplatecommand(page: Page, cmdline: string, terminaltextarea: string):
-    
+def test_terminalothertemplatecommand(page: Page, cmdline: string, terminaltextarea: string,assertstr:string):
+    if "fatal: not a git repository"!=assertstr:
+        if page.locator('#list_id_1_0').get_attribute('aria-selected')=="false":
+            bashselector="#list_id_1_0 > div > div > div.monaco-icon-label-container"
+            page.locator(bashselector).click()
     page.type(terminaltextarea, cmdline)
     page.keyboard.press("Enter")
 
 # @pytest.mark.getgithubuserrepo
 def test_getgithubuserrepo(page: Page, reponame: string):
     page.goto(test_getgithubuser()+"/"+reponame)
-    page.wait_for_timeout(2000)
+    page.wait_for_timeout(5000)
     page.reload()
     # assert that a link exists on the page
     assert reponame in page.title()
