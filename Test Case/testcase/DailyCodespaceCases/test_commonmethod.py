@@ -6,7 +6,7 @@ from playwright.async_api import Page, Playwright, Browser
 
 def test_newtemplatepage(playwright: Playwright, pageurl: string)-> Page:
     browser = playwright.chromium.launch(headless=False)
-    context = browser.new_context(storage_state="cwayma")
+    context = browser.new_context(storage_state="cwaywu")
     page = context.new_page()
     page.goto(pageurl)
     return page
@@ -40,7 +40,7 @@ def test_getgithubuser() -> string:
 
 def test_getusenamefromcookiefile() -> string:
     # read cookies from the json file
-    with open('cwayma', 'r') as f:
+    with open('cwaywu', 'r') as f:
       cookies = json.load(f)
     # get a value from the cookies array by name
     for cookie in cookies["cookies"]:

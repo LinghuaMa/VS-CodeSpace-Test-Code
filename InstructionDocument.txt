@@ -1,3 +1,4 @@
+A. plawright for python 环境搭建:	
 	1. Install python : https://www.python.org/downloads/
 		a. 安装首页面左下角的俩个option 全选
 		b. Advanced options 记得全选
@@ -22,6 +23,7 @@
 			    page = context.new_page()
     			    page.goto("https://github.com/codespaces")
 
+B. 部署
 Allure 安装：
 	1. 安装JDK；并且确保JDK 的环境变量配置；
 	2. 安装Alluree:
@@ -44,3 +46,11 @@ Allure 安装：
 • 查看Allure测试报告：
   通过以下命令直接打开默认浏览器展示报告
       allure serve ./testresult01/
+
+C. autoit 的使用
+使用autoit需要安装pyautoit插件：
+		a. pip install pyautoit
+		b. 需要在test/lib/site-packages/autoit/autoit.py 的引用dll 改为：dll = "AutoItX3_x64.dll"
+            c. 直接 import autoit
+		d. 然后下载AutoIt Window Info (x64) 去定位元素
+		
