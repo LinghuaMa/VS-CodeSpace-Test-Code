@@ -21,11 +21,7 @@ def delete_codespace(page:Page, codespaceactionselector: string):
     codespaceconfigureselector="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > div:nth-child(3) > div > div:nth-child(2) > div > div:nth-child(1)"
     codespaceconfigurBeforedelete=page.locator(codespaceconfigureselector).inner_text()
     page.get_by_role("button", name="Codespace configuration").nth(0).click()
-    if "Active" in page.locator(codespaceactionselector).nth(0).text_content():
-        page.keyboard.press("ArrowDown")  
-    for i in range(5):
-        page.keyboard.press("ArrowDown")
-    page.keyboard.press("Enter")
+    page.get_by_role("menuitem", name="Delete").click()
     page.on("dialog", lambda dialog: dialog.accept())
     page.keyboard.press("Enter")
     page.wait_for_timeout(3000)
@@ -44,9 +40,7 @@ def test_deleteAllPublishedCodespace(playwright: Playwright):
         for i in range(publishedlistcount):
             if(i<publishedlistcount-1):
                 page.get_by_role("button", name="Codespace configuration").nth(0).click()
-                for i in range(5):
-                    page.keyboard.press("ArrowDown")
-                page.keyboard.press("Enter")
+                page.get_by_role("menuitem", name="Delete").click()
                 page.on("dialog", lambda dialog: dialog.accept())
                 page.keyboard.press("Enter")
                 page.wait_for_timeout(3000)

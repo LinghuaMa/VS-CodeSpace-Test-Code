@@ -1,20 +1,21 @@
-A. plawright for python 环境搭建:	
+A. plawright for python environment setup:	
 	1. Install python : https://www.python.org/downloads/
-		a. 安装首页面左下角的俩个option 全选
-		b. Advanced options 记得全选
-	2. 安装vscode：https://code.visualstudio.com/Download/
-		a. 在Visual Studio Code中搜索并安装所需语言的Extension扩展插件：Python
-		b. 创建文件夹工程并在Terminal中通过运行命令创建虚拟环境：
-		c. python -m venv <venv>
-	3. 点击右下角切换为创建的虚拟坏境并通过(Ctrl+Shift+`)快捷键打开一个新的Terminal命令框
-		a. 通过运行命令安装开发所需的插件：
+		a. Select all of the two options in the lower left corner of the installation home page
+		b. Advanced options ps:Remember to select all options
+	2. Install vscode：https://code.visualstudio.com/Download/
+		a. search and install Python extension in vscode
+		b. Create a folder project and create a virtual environment in Terminal by running the command：
+		c. python -m venv <venv>    eg: python -m venv test,  there will generate a folder named test.
+	3. Click the bottom right corner to switch to the created virtual environment and open a new Terminal command box with the (Ctrl+Shift+`) shortcut keys
+		a. Install the required plugins for development by running the command：
 		b. pip install pytest-playwright
 		c. playwright install
-	4. 运行case：
+	4. run cases：
 		a. pytest -m markcasename --headed --browser-channel msedge
 		b. pytest --headed --browser-channel msedge
-	5. 免登录cookie 的生成：
-		在ternimal 里面执行：python -m playwright cr https://github.com/codespaces  --save-storage cwayma  然后登录账号, 会在对应的目录下生成cway 文件，然后调用该文件
+	5. Login-free cookie generation：
+		in ternimal to run：python -m playwright cr https://github.com/codespaces  --save-storage cwayma  
+		log in to your account, the cway file will be created in the corresponding directory and then called
 			i. Eg: 
 			
 			def test_showall_codespace_template(playwright: Playwright) -> None:
@@ -23,34 +24,34 @@ A. plawright for python 环境搭建:
 			    page = context.new_page()
     			    page.goto("https://github.com/codespaces")
 
-B. 部署
-Allure 安装：
-	1. 安装JDK；并且确保JDK 的环境变量配置；
-	2. 安装Alluree:
+B. Deployment
+Allure installation：
+	1. install the JDK; and ensure that the environment variables for the JDK are configured；
+	2. install Alluree:
 		
-		a. 从GitHub或者Allure官网下载安装包（Zip压缩包即可）:
-		b. GitHub地址： https://github.com/allure-framework/allure2/releases 
-		c. Allure官网地址： https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/
-		d. 解压 -> 进入bin目录 -> 运行allure.bat （一般可解压到python安装路径的根目录下）
-		e. 把bin目录加入PATH环境变量
-		f. 安装 allure-pytest插件：pip install allure-pytest
-	• Allure使用：
-	     安装完成后通过以下命令生成测试报告：
-	     pytest <测试用例> -s -q --alluredir=<测试报告路径>
+		a.  Download the installation package from GitHub or the Allure website（Zip is fine）:
+		b. GitHub address： https://github.com/allure-framework/allure2/releases 
+		c. Allure address： https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/
+		d. Unzip -> go to bin directory ->  run allure.bat （usually you can unzip to the root directory of python installation path）
+		e. Add the bin directory to the PATH environment variable
+		f. install allure-pytest extension：pip install allure-pytest
+	• The use of Allure：
+	     Generate test reports after installation with the following command：
+	     pytest <test case> -s -q --alluredir=<test report path>
 	     Example: pytest ./testcase/template/test_vanityurl.py -s -q --alluredir=./testresult
-	运行template 文件夹下的用@pytest.mark 标记为：flasktemplate or preacttemplate 的case：
+	 to run @pytest.mark cases under template folder： eg :the cases of flasktemplate or preacttemplate：
 	pytest ./testcase/template/ -m "flasktemplate or preacttemplate" -s -q --alluredir=./testresult01
 
       pytest ./testcase/template/ -m "blanktemplate or railstemplate or reacttemplate or jupytertemplate or expresstemplate or nextjstemplate or djangotemplate or flasktemplate or preacttemplate" -s -q --alluredir=./testresult01
 
-• 查看Allure测试报告：
-  通过以下命令直接打开默认浏览器展示报告
+• To view the Allure test report：
+  Open the default browser to display the report directly with the following command
       allure serve ./testresult01/
 
-C. autoit 的使用
-使用autoit需要安装pyautoit插件：
+C. the use of autoit:
+to use autoit, you need to install pyautoit extension：
 		a. pip install pyautoit
-		b. 需要在test/lib/site-packages/autoit/autoit.py 的引用dll 改为：dll = "AutoItX3_x64.dll"
-            c. 直接 import autoit
-		d. 然后下载AutoIt Window Info (x64) 去定位元素
+		b. you need to change the reference in test/lib/site-packages/autoit/autoit.py to：dll = "AutoItX3_x64.dll"
+            c. import autoit in .py file
+		d. then you also need to download : AutoIt Window Info (x64) to position the element
 		
