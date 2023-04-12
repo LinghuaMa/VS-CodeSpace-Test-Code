@@ -1,7 +1,5 @@
 import pytest
-from asyncio import sleep
-from playwright.sync_api import Page, Playwright, expect
-import re
+from playwright.sync_api import Page, Playwright
 import string
 from test_commonmethod import test_newtemplatepage,test_create_ppe_codespace,test_upload_install_vsix
 
@@ -15,21 +13,23 @@ def test_codespace_copyports(playwright: Playwright):
     test_createAndinstall(page, "8-core")
     page.locator("a", has_text="Ports").click()
     page.get_by_role("button", name="Forward a Port").click()
-    test_addport(page, "3001")
-    page.click("div[id='list_id_4_0']",button="right")
+    test_addport(page, "3071")
+    page.locator(".monaco-icon-label-container", has_text="3071").nth(0).click()
+    page.locator(".monaco-icon-label-container", has_text="3071").nth(0).click(button="right")
     page.click("text=Copy Local Address")
+    page.keyboard.press("Enter")
     page.wait_for_timeout(3000)
     page.keyboard.press("Control+Shift+F")
     page.get_by_placeholder("Search").click()
     page.get_by_placeholder("Search").clear()
     page.keyboard.press("Control+V")
-    assert "3001" in page.get_by_placeholder("Search").input_value()
+    assert "3071" in page.get_by_placeholder("Search").input_value()
 
     page.get_by_title("Copy Local Address (Ctrl+C)").click()
     page.get_by_placeholder("Search").click()
     page.get_by_placeholder("Search").clear()
     page.keyboard.press("Control+V")
-    assert "3001" in page.get_by_placeholder("Search").input_value()
+    assert "3071" in page.get_by_placeholder("Search").input_value()
 
     page.keyboard.press("Control+Shift+P")
     page.keyboard.type("Copy Forwarded Port Address")
@@ -40,33 +40,20 @@ def test_codespace_copyports(playwright: Playwright):
     page.get_by_placeholder("Search").click()
     page.get_by_placeholder("Search").clear()
     page.keyboard.press("Control+V")
-    assert "3001" in page.get_by_placeholder("Search").input_value()
+    assert "3071" in page.get_by_placeholder("Search").input_value()
 
 # 16-core WestEurope
 @pytest.mark.forwardport   
 def test_codespace_openports(playwright: Playwright):
     tempurl="https://github.com/codespaces"
     page=test_newtemplatepage(playwright, tempurl)
-    page.get_by_role("button", name="Codespace configuration").nth(0).click()
-    page.get_by_role("menuitem", name="Open in ...").click()
-    page.get_by_role("menuitem", name="Open in browser").click()
-    page.wait_for_timeout(30000)
-
-    page.locator("a", has_text="Ports").click()
-    if "3000" not in page.locator("div[id='list_id_4_0']").inner_text():
-        page.locator("a", has_text="Terminal").click()
-        page.wait_for_timeout(3000)
-        page.type("div.xterm-helpers > textarea", "npm start")
-        page.keyboard.press("Enter")
-        page.wait_for_timeout(3000)
-        page4=page.wait_for_event('popup')
-        page4.close()
-        page.locator("a", has_text="Ports").click()
+    test_opencodespace_runnpm(page)
 
     page.wait_for_timeout(1000)
     page.click("div[id='list_id_4_0']",button="right")
     page.wait_for_timeout(500)
     page.click("text=Copy Local Address")
+    page.keyboard.press("Enter")
     page.keyboard.press("Control+Shift+F")
     page.get_by_placeholder("Search").click()
     page.get_by_placeholder("Search").clear()
@@ -90,7 +77,7 @@ def test_codespace_openports(playwright: Playwright):
     page2.close()
 
     page.wait_for_timeout(3000)
-    page.get_by_title("Copy Local Address (Ctrl+C)").click()
+    page.get_by_role("listitem", name="Copy Local Address (Ctrl+C)").click()
     page.get_by_placeholder("Search").click()
     page.get_by_placeholder("Search").clear()
     page.keyboard.press("Control+V")
@@ -101,10 +88,80 @@ def test_codespace_openports(playwright: Playwright):
     page.wait_for_timeout(3000)
 
     
+@pytest.mark.forwardport   
+def test_codespace_openPublicPort(playwright: Playwright):
+    tempurl="https://github.com/codespaces"
+    browser = playwright.chromium.launch(headless=False)
+    context = browser.new_context(storage_state="cwayma")
+    page = context.new_page()
+    page.goto(tempurl)
+    test_opencodespace_runnpm(page)
+    page.wait_for_timeout(1000)
+    page.click("div[id='list_id_4_0']",button="right")
+    page.wait_for_timeout(500)
+    page.click("text=Preview in Editor")
+    page.keyboard.press("Enter")
+    page.wait_for_timeout(1500)
+    assert page.get_by_role("tab").get_by_title("Simple Browser").count()>0
 
+    page.click("div[id='list_id_4_0']",button="right")
+    page.wait_for_timeout(500)
+    page.click("text=Port Visibility")
+    page.wait_for_timeout(500)
+    page.get_by_role("menuitemcheckbox", name="Public").click()
+    page.wait_for_timeout(1500)
+    page.locator(".monaco-icon-label-container", has_text="3000").nth(0).click()
+    page.get_by_role("listitem", name="Copy Local Address (Ctrl+C)").click()
     
+    page.keyboard.press("Control+Shift+F")
+    page.get_by_placeholder("Search").click()
+    page.get_by_placeholder("Search").clear()
+    page.keyboard.press("Control+V")
+    url1=page.get_by_placeholder("Search").input_value()
+    page1 = context.new_page()
+    page1.goto(url1)
+    page.wait_for_timeout(1000)
+    assert "Visual Studio Live Share Guestbook" in page1.text_content("h1")
+    page1.close()
+    #remove a public port
+    if "3031" not in page.locator(".monaco-table.table_id_1").inner_text():
+        page.wait_for_timeout(500)
+        page.get_by_role("button", name="Add Port").click()
+        test_addport(page, "3031")
+        page.wait_for_timeout(500)
+    page.locator(".monaco-icon-label-container", has_text="3031").nth(0).click()
+    page.locator(".monaco-icon-label-container", has_text="3031").nth(0).click(button="right")
+    page.wait_for_timeout(500)
+    page.click("text=Port Visibility")
+    page.wait_for_timeout(500)
+    page.get_by_role("menuitemcheckbox", name="Public").click()
+    page.wait_for_timeout(1500)
+    page.get_by_role("button", name="Stop Forwarding Port (Delete)").click()
+    page.wait_for_timeout(500)
+    page.get_by_role("button", name="Add Port").click()
+    test_addport(page, "3031")
+    page.wait_for_timeout(500)
+    page.locator(".monaco-icon-label-container", has_text="3031").nth(0).click()
+    page.locator(".monaco-icon-label-container", has_text="3031").nth(0).click(button="right")
+    page.click("text=Port Visibility")
+    assert page.get_by_role("menuitemcheckbox", name="Private").is_checked()
+    page.wait_for_timeout(500)
+    page.get_by_role("menuitemcheckbox", name="Public").click()
+    #change port protocol
+    page.wait_for_timeout(500)
+    page.locator(".monaco-icon-label-container", has_text="3031").nth(0).click()
+    page.locator(".monaco-icon-label-container", has_text="3031").nth(0).click(button="right")
+    page.click("text=Change Port Protocol")
+    if not page.get_by_role("menuitemcheckbox", name="HTTPS").is_checked():
+        page.get_by_role("menuitemcheckbox", name="HTTPS").click()
+        page.wait_for_timeout(500)
+        page.locator(".monaco-icon-label-container", has_text="3031").nth(0).click()
+        page.locator(".monaco-icon-label-container", has_text="3031").nth(0).click(button="right")
+        page.click("text=Change Port Protocol")
+        page.wait_for_timeout(1500)
+        assert page.get_by_role("menuitemcheckbox", name="HTTPS").is_checked()   
+    page.wait_for_timeout(3000)
 
-    
 
 # 16-core WestEurope
 @pytest.mark.forwardport   
@@ -117,13 +174,16 @@ def test_codespace_forward_set_delete_ports(playwright: Playwright):
     
     tempurl="https://github.com/codespaces"
     page=test_newtemplatepage(playwright, tempurl)
-    page.get_by_role("button", name="Codespace configuration").nth(1).click()
+    page.get_by_role("button", name="Codespace configuration").nth(0).click()
     page.get_by_role("menuitem", name="Open in ...").click()
     page.get_by_role("menuitem", name="Open in browser").click()
     page.wait_for_timeout(30000)
 
     page.locator("a", has_text="Ports").click()
-    page.get_by_role("button", name="Forward a Port").click()
+    if page.get_by_role("button", name="Forward a Port").is_visible():
+        page.get_by_role("button", name="Forward a Port").click()
+    if page.get_by_role("button", name="Add Port").is_visible():
+        page.get_by_role("button", name="Add Port").click()
     test_addport(page, "3001")
     page.wait_for_timeout(800)
     page.click("div[id='list_id_4_0']",button="right")
@@ -191,6 +251,23 @@ def test_codespace_forward_set_delete_ports(playwright: Playwright):
     devconfigur = '"portsAttributes":{"3031":{"label":"3061"}}'
     assert devconfigur in page.locator(".view-lines.monaco-mouse-cursor-text").inner_text().replace("\xa0","").replace("\n","")
     page.wait_for_timeout(2000)
+
+def test_opencodespace_runnpm(page:Page):
+    page.get_by_role("button", name="Codespace configuration").nth(0).click()
+    page.get_by_role("menuitem", name="Open in ...").click()
+    page.get_by_role("menuitem", name="Open in browser").click()
+    page.wait_for_timeout(30000)
+
+    page.locator("a", has_text="Ports").click()
+    if "3000" not in page.locator("div[id='list_id_4_0']").inner_text():
+        page.locator("a", has_text="Terminal").click()
+        page.wait_for_timeout(3000)
+        page.type("div.xterm-helpers > textarea", "npm start")
+        page.keyboard.press("Enter")
+        page.wait_for_timeout(3000)
+        page4=page.wait_for_event('popup')
+        page4.close()
+        page.get_by_text("Ports", exact=True).click()
 
 def test_createAndinstall(page:Page, machinetype: string):
     page.wait_for_timeout(1000)
