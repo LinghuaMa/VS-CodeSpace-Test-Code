@@ -62,14 +62,20 @@ def test_create_ppe_codespace(page: Page, reponame: string):
     page.keyboard.press("Enter")
     page.wait_for_timeout(1000)
     assert  page.locator(vscstargetselector).inner_text()=="pre-production"     
-    page.wait_for_timeout(2000)
+    page.wait_for_timeout(1000)
 
 def test_upload_install_vsix(page: Page):
     for i in range(10):
         if ".vsix" not in page.locator("#workbench\.view\.explorer > div > div > div.monaco-scrollable-element > div.split-view-container > div:nth-child(1) > div > div.pane-body").inner_text():
             if not autoit.win_exists("[CLASS:#32770]"):
                 page.mouse.click(x=150, y=500, delay=0, button="right")
-                page.wait_for_timeout(1000)
+                page.wait_for_timeout(800)
+                for i in range(10):
+                    if not page.locator("text=Upload...").is_visible():
+                        page.mouse.click(x=150, y=500, delay=0, button="right")
+                        page.wait_for_timeout(800)
+                    else:
+                        break
                 page.click("text=Upload...")
                 page.wait_for_timeout(2000)
             else:
@@ -79,11 +85,15 @@ def test_upload_install_vsix(page: Page):
                 page.wait_for_timeout(2500)
         else:
             break
-    page.click("div[id='list_id_2_10']")
-    page.click("div[id='list_id_2_10']",button="right")
+    page.get_by_role("treeitem").filter(has_text="vsix").click()
+    page.get_by_role("treeitem").filter(has_text="vsix").click(button="right")
+    page.wait_for_timeout(500)
     if page.locator("text=Install Extension VSIX").count()<1:
+        page.click("text=Copy")
+        page.wait_for_timeout(500)
         page.get_by_role("treeitem").filter(has_text="vsix").click()
         page.get_by_role("treeitem").filter(has_text="vsix").click(button="right")
+        page.wait_for_timeout(500)
     page.click("text=Install Extension VSIX")
     page.wait_for_timeout(5000)
     page.get_by_title("Reload Now").click()

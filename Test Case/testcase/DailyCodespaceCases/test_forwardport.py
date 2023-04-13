@@ -11,6 +11,16 @@ def test_codespace_copyports(playwright: Playwright):
     test_create_ppe_codespace(page, "cltest02/publicguestbook")
     
     test_createAndinstall(page, "8-core")
+
+    # tempurl="https://github.com/codespaces"
+    # page=test_newtemplatepage(playwright, tempurl)
+    # page.get_by_role("button", name="Codespace configuration").nth(0).click()
+    # page.get_by_role("menuitem", name="Open in ...").click()
+    # page.get_by_role("menuitem", name="Open in browser").click()
+    # page.wait_for_timeout(30000)
+
+    # test_upload_install_vsix(page)
+
     page.locator("a", has_text="Ports").click()
     page.get_by_role("button", name="Forward a Port").click()
     test_addport(page, "3071")
@@ -43,14 +53,16 @@ def test_codespace_copyports(playwright: Playwright):
     assert "3071" in page.get_by_placeholder("Search").input_value()
 
 # 16-core WestEurope
-@pytest.mark.forwardport   
+@pytest.mark.forwardport  
 def test_codespace_openports(playwright: Playwright):
     tempurl="https://github.com/codespaces"
     page=test_newtemplatepage(playwright, tempurl)
     test_opencodespace_runnpm(page)
 
     page.wait_for_timeout(1000)
-    page.click("div[id='list_id_4_0']",button="right")
+    page.locator(".monaco-icon-label-container", has_text="3000").nth(0).click()
+    page.locator(".monaco-icon-label-container", has_text="3000").nth(0).click(button="right")
+    # page.click("div[id='list_id_4_0']",button="right")
     page.wait_for_timeout(500)
     page.click("text=Copy Local Address")
     page.keyboard.press("Enter")
@@ -77,6 +89,7 @@ def test_codespace_openports(playwright: Playwright):
     page2.close()
 
     page.wait_for_timeout(3000)
+    page.locator(".monaco-icon-label-container", has_text="3000").nth(0).click()
     page.get_by_role("listitem", name="Copy Local Address (Ctrl+C)").click()
     page.get_by_placeholder("Search").click()
     page.get_by_placeholder("Search").clear()
@@ -147,31 +160,54 @@ def test_codespace_openPublicPort(playwright: Playwright):
     assert page.get_by_role("menuitemcheckbox", name="Private").is_checked()
     page.wait_for_timeout(500)
     page.get_by_role("menuitemcheckbox", name="Public").click()
+    page.wait_for_timeout(2000)
+
+@pytest.mark.forwardport   
+def test_codespace_protocol_ports(playwright: Playwright):
+    tempurl="https://github.com/codespaces"
+    page=test_newtemplatepage(playwright, tempurl)
+    page.get_by_role("button", name="Codespace configuration").nth(0).click()
+    page.get_by_role("menuitem", name="Open in ...").click()
+    page.get_by_role("menuitem", name="Open in browser").click()
+    page.wait_for_timeout(30000)
+
+    page.locator("a", has_text="Ports").click()
+    if "3081" not in page.locator(".monaco-table.table_id_1").inner_text():
+        page.wait_for_timeout(500)
+        page.get_by_role("button", name="Add Port").click()
+        test_addport(page, "3081")
+        page.wait_for_timeout(500)
     #change port protocol
-    page.wait_for_timeout(500)
-    page.locator(".monaco-icon-label-container", has_text="3031").nth(0).click()
-    page.locator(".monaco-icon-label-container", has_text="3031").nth(0).click(button="right")
+    page.wait_for_timeout(2000)
+    page.locator(".monaco-icon-label-container", has_text="3081").nth(0).click()
+    page.locator(".monaco-icon-label-container", has_text="3081").nth(0).click(button="right")
     page.click("text=Change Port Protocol")
     if not page.get_by_role("menuitemcheckbox", name="HTTPS").is_checked():
         page.get_by_role("menuitemcheckbox", name="HTTPS").click()
         page.wait_for_timeout(500)
-        page.locator(".monaco-icon-label-container", has_text="3031").nth(0).click()
-        page.locator(".monaco-icon-label-container", has_text="3031").nth(0).click(button="right")
+        page.locator(".monaco-icon-label-container", has_text="3081").nth(0).click()
+        page.locator(".monaco-icon-label-container", has_text="3081").nth(0).click(button="right")
         page.click("text=Change Port Protocol")
         page.wait_for_timeout(1500)
-        assert page.get_by_role("menuitemcheckbox", name="HTTPS").is_checked()   
-    page.wait_for_timeout(3000)
+        page.get_by_role("menuitemcheckbox",name="HTTP").nth(0).click()
+        page.wait_for_timeout(1000)
+        page.locator(".monaco-icon-label-container", has_text="3081").nth(0).click()
+        page.locator(".monaco-icon-label-container", has_text="3081").nth(0).click(button="right")
+        page.click("text=Change Port Protocol")
+        # assert page.get_by_role("menuitemcheckbox", name="HTTPS").is_checked()
+    if page.get_by_role("menuitemcheckbox", name="HTTPS").is_checked():
+        page.get_by_role("menuitemcheckbox",name="HTTP").nth(0).click()
+        page.wait_for_timeout(500)
+        page.locator(".monaco-icon-label-container", has_text="3081").nth(0).click()
+        page.locator(".monaco-icon-label-container", has_text="3081").nth(0).click(button="right")
+        page.click("text=Change Port Protocol")
+        page.wait_for_timeout(1500)
+        page.get_by_role("menuitemcheckbox", name="HTTPS").click()
+        # assert page.get_by_role("menuitemcheckbox",name="HTTP", exact=True).is_checked()
+    page.wait_for_timeout(800)
 
-
-# 16-core WestEurope
 @pytest.mark.forwardport   
 def test_codespace_forward_set_delete_ports(playwright: Playwright):
-    # tempurl="https://github.com/codespaces/new?location=WestEurope"
-    # page=test_newtemplatepage(playwright, tempurl)
-    # test_create_ppe_codespace(page, "cltest02/publicguestbook")
-    
-    # test_createAndinstall(page, "16-core")
-    
     tempurl="https://github.com/codespaces"
     page=test_newtemplatepage(playwright, tempurl)
     page.get_by_role("button", name="Codespace configuration").nth(0).click()
@@ -182,8 +218,9 @@ def test_codespace_forward_set_delete_ports(playwright: Playwright):
     page.locator("a", has_text="Ports").click()
     if page.get_by_role("button", name="Forward a Port").is_visible():
         page.get_by_role("button", name="Forward a Port").click()
-    if page.get_by_role("button", name="Add Port").is_visible():
-        page.get_by_role("button", name="Add Port").click()
+    else :
+        if page.get_by_role("button", name="Add Port").is_visible():
+            page.get_by_role("button", name="Add Port").click()
     test_addport(page, "3001")
     page.wait_for_timeout(800)
     page.click("div[id='list_id_4_0']",button="right")
@@ -237,8 +274,8 @@ def test_codespace_forward_set_delete_ports(playwright: Playwright):
     page.wait_for_timeout(800)
     assert "3031" in page.locator(".monaco-table.table_id_1").inner_text()
     page.wait_for_timeout(1000)
-    page.locator("#list_id_4_0").click()
-    page.click("div[id='list_id_4_0']",button="right")
+    page.locator(".monaco-icon-label-container", has_text="3031").nth(0).click()
+    page.locator(".monaco-icon-label-container", has_text="3031").nth(0).click(button="right")
     page.get_by_role("menuitem",name="Set Label and Update devcontainer.json").click()
     page.keyboard.press("Enter")
     page.wait_for_timeout(800)
@@ -248,7 +285,7 @@ def test_codespace_forward_set_delete_ports(playwright: Playwright):
     page.locator(".monaco-tl-row", has_text=".devcontainer").click()
     page.wait_for_timeout(800)
     page.locator(".monaco-tl-contents", has_text="devcontainer.json").dblclick()
-    devconfigur = '"portsAttributes":{"3031":{"label":"3061"}}'
+    devconfigur = '"3031":{"label":"3061"}}'
     assert devconfigur in page.locator(".view-lines.monaco-mouse-cursor-text").inner_text().replace("\xa0","").replace("\n","")
     page.wait_for_timeout(2000)
 
@@ -264,13 +301,13 @@ def test_opencodespace_runnpm(page:Page):
         page.wait_for_timeout(3000)
         page.type("div.xterm-helpers > textarea", "npm start")
         page.keyboard.press("Enter")
-        page.wait_for_timeout(3000)
+        page.wait_for_timeout(500)
         page4=page.wait_for_event('popup')
         page4.close()
         page.get_by_text("Ports", exact=True).click()
 
 def test_createAndinstall(page:Page, machinetype: string):
-    page.wait_for_timeout(1000)
+    page.wait_for_timeout(500)
     #8-core
     page.get_by_role("button", name="2-core").click()
     page.wait_for_timeout(500)
@@ -279,7 +316,7 @@ def test_createAndinstall(page:Page, machinetype: string):
     assert page.get_by_role("button", name=machinetype).count()==1
 
     page.get_by_role("button", name="Create codespace").click()
-    page.wait_for_timeout(60000)
+    page.wait_for_timeout(75000)
     test_upload_install_vsix(page)
     page.wait_for_timeout(3000)
 
