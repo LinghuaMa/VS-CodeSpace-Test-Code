@@ -1,7 +1,7 @@
 import pytest
 from playwright.sync_api import Page, Playwright
 import string
-from test_commonmethod import test_newtemplatepage,test_create_ppe_codespace,test_upload_install_vsix
+from test_commonmethod import test_newtemplatepage,test_create_ppe_codespace,test_createAndinstall
 
 # 8-core SouthEastAsia
 @pytest.mark.forwardport   
@@ -305,21 +305,6 @@ def test_opencodespace_runnpm(page:Page):
         page4=page.wait_for_event('popup')
         page4.close()
         page.get_by_text("Ports", exact=True).click()
-
-def test_createAndinstall(page:Page, machinetype: string):
-    page.wait_for_timeout(500)
-    #8-core
-    page.get_by_role("button", name="2-core").click()
-    page.wait_for_timeout(500)
-    page.locator(".d-flex.flex-justify-between.mb-1", has_text=machinetype).click()
-    page.wait_for_timeout(1000)
-    assert page.get_by_role("button", name=machinetype).count()==1
-
-    page.get_by_role("button", name="Create codespace").click()
-    page.wait_for_timeout(75000)
-    test_upload_install_vsix(page)
-    page.wait_for_timeout(3000)
-
 
 def test_addport(page: Page, port: string):
     page.keyboard.type(port)

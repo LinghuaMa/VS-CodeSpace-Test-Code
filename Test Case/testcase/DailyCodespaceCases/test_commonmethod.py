@@ -3,6 +3,7 @@ import json
 import uuid
 import pytest
 import autoit
+import getpass
 from playwright.async_api import Page, Playwright, Browser
 
 def test_newtemplatepage(playwright: Playwright, pageurl: string)-> Page:
@@ -11,6 +12,36 @@ def test_newtemplatepage(playwright: Playwright, pageurl: string)-> Page:
     page = context.new_page()
     page.goto(pageurl)
     return page
+
+def test_open_page_sso(playwright: Playwright, pageurl: string)-> Page:
+    context = playwright.chromium.launch_persistent_context(user_data_dir=f"c:\\User\\{getpass.getuser()}\\AppData\\Local\\Microsoft\\Edge\\User Data",
+                                                accept_downloads=True,
+                                                headless=False,
+                                                bypass_csp=False,
+                                                slow_mo=1000,
+                                                channel="msedge")    
+    page = context.new_page()
+    page.storage_state="cwayma"
+    page.goto(pageurl)
+    if page.get_by_text("Single sign-on").is_visible():
+        page.get_by_text("Single sign-on").click()
+        page.get_by_role("button", name="Continue").click()
+        page.wait_for_timeout(5000)
+    return page
+
+def test_createAndinstall(page:Page, machinetype: string):
+    page.wait_for_timeout(500)
+    #8-core
+    page.get_by_role("button", name="2-core").click()
+    page.wait_for_timeout(500)
+    page.locator(".d-flex.flex-justify-between.mb-1", has_text=machinetype).click()
+    page.wait_for_timeout(1000)
+    assert page.get_by_role("button", name=machinetype).count()==1
+
+    page.get_by_role("button", name="Create codespace").click()
+    page.wait_for_timeout(75000)
+    test_upload_install_vsix(page)
+    page.wait_for_timeout(3000)
 
 def test_terminalcommand(page: Page, cmdline: string):
     terminaltextarea="#terminal > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div.pane-body.shell-integration.integrated-terminal.wide > div.monaco-split-view2.horizontal > div.monaco-scrollable-element > div.split-view-container > div > div > div > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div > div > div > div.xterm-screen > div.xterm-helpers > textarea"
@@ -98,3 +129,21 @@ def test_upload_install_vsix(page: Page):
     page.wait_for_timeout(5000)
     page.get_by_title("Reload Now").click()
     page.wait_for_timeout(15000)
+
+
+
+def test_create_microsoft_repo(playwright: Playwright):
+    pageurl="https://github.com/codespaces/new"
+    context = playwright.chromium.launch_persistent_context(user_data_dir=f"c:\\User\\{getpass.getuser()}\\AppData\\Local\\Microsoft\\Edge\\User Data",
+                                                accept_downloads=True,
+                                                headless=False,
+                                                bypass_csp=False,
+                                                slow_mo=1000,
+                                                channel="msedge")    
+    page = context.new_page()
+    page.storage_state="cwayma"
+    page.goto(pageurl)
+    test_create_ppe_codespace(page, "Microsoft/vscode-remote-try-node")
+    page.get_by_role("button", name="Create codespace").click()
+    page.wait_for_timeout(75000)
+
