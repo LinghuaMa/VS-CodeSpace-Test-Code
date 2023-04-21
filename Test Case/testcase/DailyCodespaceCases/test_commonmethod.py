@@ -98,22 +98,22 @@ def test_create_ppe_codespace(page: Page, reponame: string):
 def test_upload_install_vsix(page: Page):
     for i in range(10):
         if ".vsix" not in page.locator("#workbench\.view\.explorer > div > div > div.monaco-scrollable-element > div.split-view-container > div:nth-child(1) > div > div.pane-body").inner_text():
-            if not autoit.win_exists("[CLASS:#32770]"):
-                page.mouse.click(x=150, y=500, delay=0, button="right")
-                page.wait_for_timeout(800)
-                for i in range(10):
-                    if not page.locator("text=Upload...").is_visible():
-                        page.mouse.click(x=150, y=500, delay=0, button="right")
-                        page.wait_for_timeout(800)
-                    else:
-                        break
-                page.click("text=Upload...")
-                page.wait_for_timeout(2000)
-            else:
-                autoit.control_send("[CLASS:#32770]", "Edit1", 'C:\\Users\\v-margema\\Downloads\\codespaces-1.14.5.vsix')
-                page.wait_for_timeout(3000)
-                autoit.control_click("[Class:#32770]", "Button1")
-                page.wait_for_timeout(2500)
+            # if not autoit.win_exists("[CLASS:#32770]"):
+            page.mouse.click(x=150, y=500, delay=0, button="right")
+            page.wait_for_timeout(800)
+            for i in range(10):
+                if not page.locator("text=Upload...").is_visible():
+                    page.mouse.click(x=150, y=500, delay=0, button="right")
+                    page.wait_for_timeout(800)
+                else:
+                    break
+            page.click("text=Upload...")
+            page.wait_for_timeout(2000)
+        # else:
+            autoit.control_send("[CLASS:#32770]", "Edit1", 'C:\\Users\\v-margema\\Downloads\\codespaces-1.14.5.vsix')
+            page.wait_for_timeout(3000)
+            autoit.control_click("[Class:#32770]", "Button1")
+            page.wait_for_timeout(2500)
         else:
             break
     page.get_by_role("treeitem").filter(has_text="vsix").click()
@@ -146,4 +146,9 @@ def test_create_microsoft_repo(playwright: Playwright):
     test_create_ppe_codespace(page, "Microsoft/vscode-remote-try-node")
     page.get_by_role("button", name="Create codespace").click()
     page.wait_for_timeout(75000)
+
+
+
+
+
 

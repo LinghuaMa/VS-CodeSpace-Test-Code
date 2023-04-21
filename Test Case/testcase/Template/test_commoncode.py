@@ -2,28 +2,45 @@ import string
 import json
 import uuid
 import pytest
+import getpass
 from playwright.async_api import Page, Playwright, Browser
 
 def test_newtemplatepage(playwright: Playwright, pageurl: string)-> Page:
     browser = playwright.chromium.launch(headless=False)
-    context = browser.new_context(storage_state="cwaywu")
+    context = browser.new_context(storage_state="cwayma")
     page = context.new_page()
     page.goto(pageurl)
     return page
 
+def test_open_page_sso(playwright: Playwright, pageurl: string)-> Page:
+    context = playwright.chromium.launch_persistent_context(user_data_dir=f"c:\\User\\{getpass.getuser()}\\AppData\\Local\\Microsoft\\Edge\\User Data",
+                                                accept_downloads=True,
+                                                headless=False,
+                                                bypass_csp=False,
+                                                slow_mo=1000,
+                                                channel="msedge")    
+    page = context.new_page()
+    page.storage_state="cwayma"
+    page.goto(pageurl)
+    if page.get_by_text("Single sign-on").is_visible():
+        page.get_by_text("Single sign-on").click()
+        page.get_by_role("button", name="Continue").click()
+        page.wait_for_timeout(5000)
+    return page
+
 def test_terminalcommand(page: Page, cmdline: string):
-    terminaltextarea="#terminal > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div.pane-body.shell-integration.integrated-terminal.wide > div.monaco-split-view2.horizontal > div.monaco-scrollable-element > div.split-view-container > div > div > div > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div > div > div > div.xterm-screen > div.xterm-helpers > textarea"
-    page.type(terminaltextarea, cmdline)
+    if page.get_by_text("bash").count()==1:
+        page.get_by_text("bash").click()
+    page.get_by_label("Terminal 1, bash Run").type(cmdline)
     page.keyboard.press("Enter")
 
-def test_terminalothertemplatecommand(page: Page, cmdline: string, terminaltextarea: string,assertstr:string):
-    if "fatal: not a git repository"!=assertstr:
-        if page.locator('#list_id_1_0').get_attribute('aria-selected')=="false":
-            bashselector="#list_id_1_0 > div > div > div.monaco-icon-label-container"
-            page.locator(bashselector).click()
+def test_terminalothertemplatecommand(page: Page, cmdline: string,assertstr:string):
+    if "fatal: not a git repository"!=assertstr and page.get_by_text("bash").count()==1:
+        page.get_by_text("bash").click()
     page.keyboard.press("Enter")
     page.wait_for_timeout(1000)
-    page.type(terminaltextarea, cmdline)
+    page.get_by_label("Terminal 1, bash Run").type(cmdline)
+    # page.type(terminaltextarea, cmdline)
     page.keyboard.press("Enter")
 
 # @pytest.mark.getgithubuserrepo
@@ -42,7 +59,7 @@ def test_getgithubuser() -> string:
 
 def test_getusenamefromcookiefile() -> string:
     # read cookies from the json file
-    with open('cwaywu', 'r') as f:
+    with open('cwayma', 'r') as f:
       cookies = json.load(f)
     # get a value from the cookies array by name
     for cookie in cookies["cookies"]:

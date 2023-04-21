@@ -3,21 +3,22 @@ import json
 import uuid
 import pytest
 from playwright.async_api import Page, Playwright, Browser
-from test_commoncode import test_newtemplatepage,test_terminalcommand,test_getgithubuserrepo, test_terminalothertemplatecommand
+from test_commoncode import test_open_page_sso,test_getgithubuserrepo, test_terminalothertemplatecommand
 
 #region Blank Template
 @pytest.mark.blanktemplate
-def test_blank_template_create_codespace_(playwright: Playwright) -> None:
+def test_create_blank_template_codespace(playwright: Playwright) -> None:
     new_page=chooseppeoption(playwright,"Blank")
     commondactionselecter="div.codicon.error.terminal-command-decoration.xterm-decoration.codicon-terminal-decoration-error"
-    terminaltextarea="div.split-view-container > div > div > div > div > div > div.xterm-screen > div.xterm-helpers > textarea"
-    test_excutecommandandvalidate(new_page,terminaltextarea,commondactionselecter,"git status","fatal: not a git repository")
+    # commondactionselecter="div.codicon.error.terminal-command-decoration.xterm-decoration.codicon-terminal-decoration-error"
+    # terminaltextarea="div.split-view-container > div > div > div > div > div > div.xterm-screen > div.xterm-helpers > textarea"
+    test_excutecommandandvalidate(new_page,commondactionselecter,"git status","fatal: not a git repository")
     test_addnewfileandnavigatetosoucontrol(new_page)
     new_page.get_by_role("button").filter(has_text="Publish to GitHub").click()
     
     oldreponame=new_page.get_by_role("combobox").input_value()
     guid = uuid.uuid4().hex
-    new_page.locator(reponameselector).fill(oldreponame+guid)
+    new_page.get_by_role("combobox").fill(oldreponame+guid)
     new_page.wait_for_timeout(1000)
     new_page.keyboard.press("ArrowDown")
     new_page.keyboard.press("Enter")
@@ -67,13 +68,12 @@ def test_preacttemplate(playwright: Playwright):
 def test_othertempcodespace(hastext: string, assertserver:string, playwright: Playwright):
     codespace_page=chooseppeoption(playwright,hastext)
     codespace_page.wait_for_load_state()
-    codespace_page.wait_for_timeout(10000)
+    codespace_page.wait_for_timeout(120000)
     # open devcontainer.json file
-    devcontainerselector="#list_id_2_0 > div > div.monaco-tl-twistie.collapsible.codicon.codicon-tree-item-expanded"
-    codespace_page.locator(devcontainerselector).click()
-    codespace_page.wait_for_timeout(1000)
-    fileselector="#list_id_2_1 > div > div.monaco-tl-contents > div > div > span > a"
-    codespace_page.locator(fileselector).click()
+    codespace_page.keyboard.press("Control+Shift+E")
+    codespace_page.locator(".monaco-tl-row", has_text=".devcontainer").click()
+    codespace_page.wait_for_timeout(800)
+    codespace_page.locator(".monaco-tl-contents", has_text="devcontainer.json").click()
     jsonfiletextselector="div:nth-child(3) > div > div > div > div > div:nth-child(3) > div > div > div > div.split-view-container > div:nth-child(1)"
     openfilenameselector=".tab.tab-actions-right.sizing-fit.has-icon"
     codespace_page.wait_for_timeout(1000)
@@ -84,42 +84,29 @@ def test_othertempcodespace(hastext: string, assertserver:string, playwright: Pl
         assert assertserver in jsonfiletext
         #open a new terminal and validate git status
         codespace_page.wait_for_timeout(10000)
-
-        bashselector="#list_id_1_0 > div > div > div.monaco-icon-label-container"
-        codespace_page.locator(bashselector).click()
+        codespace_page.get_by_text("bash").click()
     codespace_page.wait_for_timeout(10000)
     #validate git-status
-    terminalareaselector="div:nth-child(1) > div > div > div > div > div > div > div > div > div.xterm-screen > div.xterm-helpers > textarea"
     commondactionselecter="div.terminal-command-decoration.codicon.xterm-decoration.codicon-terminal-decoration-success"
-    test_excutecommandandvalidate(codespace_page, terminalareaselector, commondactionselecter, "git status","nothing to commit, working tree clean")
+    test_excutecommandandvalidate(codespace_page, commondactionselecter, "git status","nothing to commit, working tree clean")
     #validate git-log       div.xterm-decoration-container > div:nth-child(2)
     commondactionselecter="div.xterm-decoration-container > div:nth-child(2)"
-    test_excutecommandandvalidate(codespace_page, terminalareaselector, commondactionselecter, "git log","Initial commit")
+    test_excutecommandandvalidate(codespace_page, commondactionselecter, "git log","Initial commit")
     
     test_addnewfileandnavigatetosoucontrol(codespace_page)
     codespace_page.keyboard.type("add a test html file")
     codespace_page.wait_for_timeout(1000)
-    changelistid="#list_id_6_2"
-    commitlistid="#list_id_6_1"
-    if "jupyter" in jsonfiletext:
-        changelistid="#list_id_7_2"
-        commitlistid="#list_id_7_1"
-    changesselector=changelistid+" > div > div.monaco-tl-contents > div > div.name"
-    codespace_page.locator(changesselector).hover()
-    sageallselector=changelistid+" > div > div.monaco-tl-contents > div > div.actions > div > ul > li:nth-child(2) > a"
-    codespace_page.locator(sageallselector).click()
+    codespace_page.get_by_text("Changes", exact=True).hover()
+    codespace_page.get_by_title("Stage All Changes").click()
     codespace_page.wait_for_timeout(1000)
-    commitbuttonselector=commitlistid+" > div > div.monaco-tl-contents > div > div > a.monaco-button.monaco-text-button"
-    codespace_page.locator(commitbuttonselector).click()
+    codespace_page.get_by_role("button", name="Commit", exact=True).click()
     codespace_page.wait_for_timeout(1000)
-    portsselector="#workbench\.parts\.panel > div.composite.title > div.composite-bar.panel-switcher-container > div > ul>li:nth-child(5)"
-    
+    codespace_page.locator("a", has_text="Ports").click()
     if "jupyter" not in jsonfiletext:
-        if codespace_page.locator(portsselector).get_attribute('aria-selected')=="false":
-            codespace_page.locator(portsselector).click()
-        runningprocessselector="#list_id_8_0 > div > div:nth-child(4) > div > div.monaco-icon-label > div"
+        # if codespace_page.locator(portsselector).get_attribute('aria-selected')=="false":
+        #     codespace_page.locator(portsselector).click()
         for i in range(50):
-            if codespace_page.locator(runningprocessselector).inner_text()=="":
+            if codespace_page.get_by_role("listitem", name="Remote port").nth(0).inner_text().split("\n")[2]=="":
                 codespace_page.wait_for_timeout(5000)
             else:
                 break
@@ -129,12 +116,11 @@ def test_othertempcodespace(hastext: string, assertserver:string, playwright: Pl
         assert 'Simple Browser' in codespace_page.locator(simplebrowserselector).inner_text()
     
     codespace_page.wait_for_timeout(1000)
-    publishselector=commitlistid+" > div > div.monaco-tl-contents > div > a"
-    codespace_page.locator(publishselector).click()
-    reponame="#js-vscode-workbench-placeholder > div > div.quick-input-widget.show-file-icons > div.quick-input-header > div.quick-input-and-message > div.quick-input-filter > div.quick-input-box > div > div.monaco-inputbox.idle > div > input"
-    oldreponame=codespace_page.locator(reponame).input_value()
+    codespace_page.get_by_role("button", name="Publish Branch").click()
+    # reponame="#js-vscode-workbench-placeholder > div > div.quick-input-widget.show-file-icons > div.quick-input-header > div.quick-input-and-message > div.quick-input-filter > div.quick-input-box > div > div.monaco-inputbox.idle > div > input"
+    oldreponame=codespace_page.get_by_role("combobox").input_value()
     guid = uuid.uuid4().hex
-    codespace_page.locator(reponame).fill(oldreponame+guid)
+    codespace_page.get_by_role("combobox").fill(oldreponame+guid)
     codespace_page.wait_for_timeout(2000)
     codespace_page.keyboard.press("ArrowDown")
     codespace_page.keyboard.press("Enter")
@@ -145,7 +131,8 @@ def test_othertempcodespace(hastext: string, assertserver:string, playwright: Pl
 
 def chooseppeoption(playwright:Playwright,hastext: string)->Page:
     tempurl="https://github.com/codespaces/templates"
-    page=test_newtemplatepage(playwright, tempurl)
+    page=test_open_page_sso(playwright, tempurl)
+    page.context.pages[-2].close()
     assert "Choose a template" in page.text_content('h1')
 
     page.locator(".form-select.mt-1.color-bg-subtle").nth(0).click()
@@ -169,26 +156,24 @@ def test_addnewfileandnavigatetosoucontrol(new_page:Page)->Page:
     new_page.wait_for_timeout(1000)
     return new_page
 
-def test_excutecommandandvalidate(codespace_page:Page, terminaltextarea:string, commondactionselecter:string,  terminalcommand:string, assertstr:string):
+def test_excutecommandandvalidate(codespace_page:Page, commondactionselecter:string,  terminalcommand:string, assertstr:string):
     if "fatal: not a git repository"!=assertstr:
-        bashselector="#list_id_1_0 > div > div > div.monaco-icon-label-container"
-        codespace_page.locator(bashselector).click()
-    test_terminalothertemplatecommand(codespace_page, terminalcommand,terminaltextarea,assertstr)
+        if codespace_page.get_by_text("bash").count()==1:
+            codespace_page.get_by_text("bash").click()
+    test_terminalothertemplatecommand(codespace_page, terminalcommand,assertstr)
     codespace_page.wait_for_timeout(2000)
     codespace_page.locator(commondactionselecter).click()
     for i in range(3):
         codespace_page.keyboard.press("ArrowDown")
     codespace_page.keyboard.press("Enter")
     if terminalcommand!="git log":
-        searchselector="#workbench\.parts\.activitybar > div > div.composite-bar > div > ul > li:nth-child(2) > a"
-        codespace_page.locator(searchselector).click()
+        codespace_page.keyboard.press("Control+Shift+F")
     codespace_page.get_by_placeholder("Search").click()
     codespace_page.get_by_placeholder("Search").clear()
     codespace_page.keyboard.press("Control+V")
     codespace_page.wait_for_timeout(500)
-    if "fatal: not a git repository"!=assertstr:
-        if codespace_page.locator('#list_id_1_0').get_attribute('aria-selected')=="false":
-            bashselector="#list_id_1_0 > div > div > div.monaco-icon-label-container"
-            codespace_page.locator(bashselector).click()
+    if "fatal: not a git repository"!=assertstr and codespace_page.get_by_text("bash").count()==1:
+        # if codespace_page.get_by_text("bash").get_attribute('aria-selected')=="false":
+        codespace_page.get_by_text("bash").click()
     assert assertstr in codespace_page.get_by_placeholder("Search").input_value()
 #endregion Other Templates

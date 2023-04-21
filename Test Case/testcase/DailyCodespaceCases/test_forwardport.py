@@ -1,13 +1,14 @@
 import pytest
 from playwright.sync_api import Page, Playwright
 import string
-from test_commonmethod import test_newtemplatepage,test_create_ppe_codespace,test_createAndinstall
+from test_commonmethod import test_newtemplatepage,test_open_page_sso,test_create_ppe_codespace,test_createAndinstall
 
 # 8-core SouthEastAsia
 @pytest.mark.forwardport   
 def test_codespace_copyports(playwright: Playwright):
     tempurl="https://github.com/codespaces/new?location=SouthEastAsia"
-    page=test_newtemplatepage(playwright, tempurl)
+    page=test_open_page_sso(playwright, tempurl)
+    page.context.pages[-2].close()
     test_create_ppe_codespace(page, "cltest02/publicguestbook")
     
     test_createAndinstall(page, "8-core")
@@ -51,12 +52,14 @@ def test_codespace_copyports(playwright: Playwright):
     page.get_by_placeholder("Search").clear()
     page.keyboard.press("Control+V")
     assert "3071" in page.get_by_placeholder("Search").input_value()
+    page.close()
 
 # 16-core WestEurope
 @pytest.mark.forwardport  
 def test_codespace_openports(playwright: Playwright):
     tempurl="https://github.com/codespaces"
-    page=test_newtemplatepage(playwright, tempurl)
+    page=test_open_page_sso(playwright, tempurl)
+    page.context.pages[-2].close()
     test_opencodespace_runnpm(page)
 
     page.wait_for_timeout(1000)
@@ -165,7 +168,8 @@ def test_codespace_openPublicPort(playwright: Playwright):
 @pytest.mark.forwardport   
 def test_codespace_protocol_ports(playwright: Playwright):
     tempurl="https://github.com/codespaces"
-    page=test_newtemplatepage(playwright, tempurl)
+    page=test_open_page_sso(playwright, tempurl)
+    page.context.pages[-2].close()
     page.get_by_role("button", name="Codespace configuration").nth(0).click()
     page.get_by_role("menuitem", name="Open in ...").click()
     page.get_by_role("menuitem", name="Open in browser").click()
@@ -209,7 +213,8 @@ def test_codespace_protocol_ports(playwright: Playwright):
 @pytest.mark.forwardport   
 def test_codespace_forward_set_delete_ports(playwright: Playwright):
     tempurl="https://github.com/codespaces"
-    page=test_newtemplatepage(playwright, tempurl)
+    page=test_open_page_sso(playwright, tempurl)
+    page.context.pages[-2].close()
     page.get_by_role("button", name="Codespace configuration").nth(0).click()
     page.get_by_role("menuitem", name="Open in ...").click()
     page.get_by_role("menuitem", name="Open in browser").click()
@@ -221,11 +226,12 @@ def test_codespace_forward_set_delete_ports(playwright: Playwright):
     else :
         if page.get_by_role("button", name="Add Port").is_visible():
             page.get_by_role("button", name="Add Port").click()
-    test_addport(page, "3001")
+    if "3001" not in page.locator(".monaco-table.table_id_1").inner_text():
+        test_addport(page, "3001")
     page.wait_for_timeout(800)
     page.click("div[id='list_id_4_0']",button="right")
     page.locator("text=Forward a Port").click()
-    page.keyboard.press("Enter")
+    # page.keyboard.press("Enter")
     test_addport(page, "3011")
     
     page.wait_for_timeout(800)
@@ -244,8 +250,8 @@ def test_codespace_forward_set_delete_ports(playwright: Playwright):
     page.locator("#list_id_4_0").click()
     page.click("div[id='list_id_4_0']",button="right")
     page.locator("text=Set Port Label").click()
-    page.keyboard.press("Enter")
-    page.wait_for_timeout(800)
+    # page.keyboard.press("Enter")
+    page.wait_for_timeout(1000)
     page.keyboard.type("3041")
     page.keyboard.press("Enter")
     page.wait_for_timeout(800)
@@ -277,11 +283,12 @@ def test_codespace_forward_set_delete_ports(playwright: Playwright):
     page.locator(".monaco-icon-label-container", has_text="3031").nth(0).click()
     page.locator(".monaco-icon-label-container", has_text="3031").nth(0).click(button="right")
     page.get_by_role("menuitem",name="Set Label and Update devcontainer.json").click()
-    page.keyboard.press("Enter")
+    # page.keyboard.press("Enter")
     page.wait_for_timeout(800)
     page.keyboard.type("3061")
     page.keyboard.press("Enter")
     page.wait_for_timeout(800)
+    page.keyboard.press("Control+Shift+E")
     page.locator(".monaco-tl-row", has_text=".devcontainer").click()
     page.wait_for_timeout(800)
     page.locator(".monaco-tl-contents", has_text="devcontainer.json").dblclick()
@@ -296,6 +303,7 @@ def test_opencodespace_runnpm(page:Page):
     page.wait_for_timeout(30000)
 
     page.locator("a", has_text="Ports").click()
+    page.wait_for_timeout(9000)
     if "3000" not in page.locator("div[id='list_id_4_0']").inner_text():
         page.locator("a", has_text="Terminal").click()
         page.wait_for_timeout(3000)
