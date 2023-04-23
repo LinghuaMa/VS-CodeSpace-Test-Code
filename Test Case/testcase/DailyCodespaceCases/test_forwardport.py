@@ -13,15 +13,6 @@ def test_codespace_copyports(playwright: Playwright):
     
     test_createAndinstall(page, "8-core")
 
-    # tempurl="https://github.com/codespaces"
-    # page=test_newtemplatepage(playwright, tempurl)
-    # page.get_by_role("button", name="Codespace configuration").nth(0).click()
-    # page.get_by_role("menuitem", name="Open in ...").click()
-    # page.get_by_role("menuitem", name="Open in browser").click()
-    # page.wait_for_timeout(30000)
-
-    # test_upload_install_vsix(page)
-
     page.locator("a", has_text="Ports").click()
     page.get_by_role("button", name="Forward a Port").click()
     test_addport(page, "3071")
