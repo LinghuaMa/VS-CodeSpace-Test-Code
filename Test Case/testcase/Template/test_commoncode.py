@@ -7,7 +7,7 @@ from playwright.async_api import Page, Playwright, Browser
 
 def test_newtemplatepage(playwright: Playwright, pageurl: string)-> Page:
     browser = playwright.chromium.launch(headless=False)
-    context = browser.new_context(storage_state="cwayma")
+    context = browser.new_context(storage_state="cway")
     page = context.new_page()
     page.goto(pageurl)
     return page
@@ -20,7 +20,7 @@ def test_open_page_sso(playwright: Playwright, pageurl: string)-> Page:
                                                 slow_mo=1000,
                                                 channel="msedge")    
     page = context.new_page()
-    page.storage_state="cwayma"
+    page.storage_state="cway"
     page.goto(pageurl)
     if page.get_by_text("Single sign-on").is_visible():
         page.get_by_text("Single sign-on").click()
@@ -59,7 +59,7 @@ def test_getgithubuser() -> string:
 
 def test_getusenamefromcookiefile() -> string:
     # read cookies from the json file
-    with open('cwayma', 'r') as f:
+    with open('cway', 'r') as f:
       cookies = json.load(f)
     # get a value from the cookies array by name
     for cookie in cookies["cookies"]:

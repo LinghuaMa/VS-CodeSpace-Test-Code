@@ -11,6 +11,7 @@ def test_deleteAllCodespace(playwright: Playwright):
     tempurl="https://github.com/codespaces"
     page=test_open_page_sso(playwright, tempurl)
     page.context.pages[-2].close()
+    page.reload()
     listcount=page.get_by_role("button", name="Codespace configuration").count()
     if  listcount>0:
         for i in range(listcount):

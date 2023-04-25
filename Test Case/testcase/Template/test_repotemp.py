@@ -3,63 +3,60 @@ import json
 import uuid
 import pytest
 from playwright.async_api import Page, Playwright, Browser
-from test_commoncode import test_newtemplatepage,test_terminalcommand,test_getgithubuserrepo
+from test_commoncode import test_newtemplatepage,test_terminalcommand,test_getusenamefromcookiefile
 
 #region Repository Templates
 @pytest.mark.blanktemplate
 def test_blankRepositoryTemplates(playwright: Playwright):
     blankrepotemp="codespaces-blank"
-    test_userepositorytemp(playwright, blankrepotemp)
+    test_open_in_codespace(playwright, blankrepotemp)
 
 @pytest.mark.railstemplate
 def test_railsRepositoryTemplates(playwright: Playwright):
     railsrepotemp="codespaces-rails"
-    test_userepositorytemp(playwright, railsrepotemp)
+    test_open_in_codespace(playwright, railsrepotemp)
 
 @pytest.mark.reacttemplate
 def test_reactRepositoryTemplates(playwright: Playwright):
     reactrepotemp="codespaces-react"
-    test_userepositorytemp(playwright, reactrepotemp)
+    test_open_in_codespace(playwright, reactrepotemp)
 
 @pytest.mark.jupytertemplate
 def test_jupyterRepositoryTemplates(playwright: Playwright):
     jupyterrepotemp="codespaces-jupyter"
-    test_userepositorytemp(playwright, jupyterrepotemp)
+    test_open_in_codespace(playwright, jupyterrepotemp)
 
 @pytest.mark.expresstemplate
 def test_expressRepositoryTemplates(playwright: Playwright):
     expressrepotemp="codespaces-express"
-    test_userepositorytemp(playwright, expressrepotemp)
+    test_open_in_codespace(playwright, expressrepotemp)
 
 @pytest.mark.djangotemplate
 def test_djangoRepositoryTemplates(playwright: Playwright):
     djangorepotemp="codespaces-django"
-    test_userepositorytemp(playwright, djangorepotemp)
+    test_open_in_codespace(playwright, djangorepotemp)
 
 @pytest.mark.nextjstemplate
 def test_nextjsRepositoryTemplates(playwright: Playwright):
     nextjsrepotemp="codespaces-nextjs"
-    test_userepositorytemp(playwright, nextjsrepotemp)
+    test_open_in_codespace(playwright, nextjsrepotemp)
 
 @pytest.mark.flasktemplate
 def test_flaskRepositoryTemplates(playwright: Playwright):
     flaskrepotemp="codespaces-flask"
-    test_userepositorytemp(playwright, flaskrepotemp)
+    test_open_in_codespace(playwright, flaskrepotemp)
 
 @pytest.mark.preacttemplate
 def test_preactRepositoryTemplates(playwright: Playwright):
     preactrepotemp="codespaces-preact"
-    test_userepositorytemp(playwright, preactrepotemp)
+    test_open_in_codespace(playwright, preactrepotemp)
     
-def test_userepositorytemp(playwright: Playwright, repotemp: string):
+def test_open_in_codespace(playwright: Playwright, repotemp: string):
     githuburl="https://github.com/github/"
     page=test_newtemplatepage(playwright, githuburl+repotemp)
     assert repotemp in page.title()
-    commonbuttonselector="#repo-content-pjax-container > div > div > div.Layout.Layout--flowRow-until-md.Layout--sidebarPosition-end.Layout--sidebarPosition-flowRow-end > div.Layout-main > div.file-navigation.mb-3.d-flex.flex-items-start > span:nth-child(8) > details"
-    geenusethembuttonselector=commonbuttonselector+" > summary"
-    page.locator(geenusethembuttonselector).click()
-    openincodespbuttonselector=commonbuttonselector+" > div > ul > li:nth-child(3) > form > button"
-    page.locator(openincodespbuttonselector).click()
+    page.get_by_role("button", name="Use this template").click()
+    page.locator("button", has_text="Open in a codespace").click()
     codespace_page=page.wait_for_event('popup')
     page.close()
 
@@ -68,16 +65,76 @@ def test_userepositorytemp(playwright: Playwright, repotemp: string):
 
 def test_validatepublishbutton(codespace_page: Page, repotemp: string):
     codespace_page.wait_for_timeout(10000)
-    sourcecontrolselector="#workbench\.parts\.activitybar > div > div.composite-bar > div > ul > li:nth-child(3) > a"
-    codespace_page.locator(sourcecontrolselector).click()
-    codespace_page.wait_for_load_state("networkidle")
+    codespace_page.get_by_role("tab", name="Source Control").click()
     codespace_page.keyboard.press("Control+Shift+G")
     codespace_page.wait_for_timeout(10000)
     if "blank" in repotemp:
-      assertselector="#workbench\.view\.scm > div > div > div.monaco-scrollable-element > div.split-view-container > div > div > div.pane-body.welcome > div.welcome-view > div > div.welcome-view-content > div > a"
+      assert codespace_page.get_by_role("button",name="Publish to GitHub").is_visible()
     else:
-      assertselector="#list_id_4_1 > div > div.monaco-tl-contents > div > a"
-    assert codespace_page.is_visible(assertselector)
+      assert codespace_page.get_by_role("button",name="Publish Branch").is_visible()
     codespace_page.wait_for_timeout(2000)
     codespace_page.close()
 #endregion Repository Templates
+
+#region User this template--create in a new repository
+@pytest.mark.blanktemplate
+def test_blankTemplates_create_repo(playwright: Playwright):
+    blankrepotemp="codespaces-blank"
+    test_create_new_repository(playwright, blankrepotemp)
+
+@pytest.mark.railstemplate
+def test_railsRepositoryTemplates(playwright: Playwright):
+    railsrepotemp="codespaces-rails"
+    test_create_new_repository(playwright, railsrepotemp)
+
+@pytest.mark.reacttemplate
+def test_reactRepositoryTemplates(playwright: Playwright):
+    reactrepotemp="codespaces-react"
+    test_create_new_repository(playwright, reactrepotemp)
+
+@pytest.mark.jupytertemplate
+def test_jupyterRepositoryTemplates(playwright: Playwright):
+    jupyterrepotemp="codespaces-jupyter"
+    test_create_new_repository(playwright, jupyterrepotemp)
+
+@pytest.mark.expresstemplate
+def test_expressRepositoryTemplates(playwright: Playwright):
+    expressrepotemp="codespaces-express"
+    test_create_new_repository(playwright, expressrepotemp)
+
+@pytest.mark.djangotemplate
+def test_djangoRepositoryTemplates(playwright: Playwright):
+    djangorepotemp="codespaces-django"
+    test_create_new_repository(playwright, djangorepotemp)
+
+@pytest.mark.nextjstemplate
+def test_nextjsRepositoryTemplates(playwright: Playwright):
+    nextjsrepotemp="codespaces-nextjs"
+    test_create_new_repository(playwright, nextjsrepotemp)
+
+@pytest.mark.flasktemplate
+def test_flaskRepositoryTemplates(playwright: Playwright):
+    flaskrepotemp="codespaces-flask"
+    test_create_new_repository(playwright, flaskrepotemp)
+
+@pytest.mark.preacttemplate
+def test_preactRepositoryTemplates(playwright: Playwright):
+    preactrepotemp="codespaces-preact"
+    test_create_new_repository(playwright, preactrepotemp)
+
+def test_create_new_repository(playwright: Playwright, repotemp: string):
+    githuburl="https://github.com/github/"
+    page=test_newtemplatepage(playwright, githuburl+repotemp)
+    assert repotemp in page.title()
+    guid = uuid.uuid4().hex
+    page.get_by_role("button", name="Use this template").click()
+    page.locator("a", has_text="Create a new repository").click()
+    page.get_by_role("button", name="Select an owner").click()
+    page.keyboard.press("Tab")
+    page.keyboard.press("Enter")
+    page.locator("#new_repository_name").fill(repotemp+guid)
+    page.locator("button", has_text="Create repository from template" ).click()
+    page.wait_for_timeout(9999)
+    assert "Latest commit" in page.text_content("h2")
+    page.wait_for_timeout(3000)
+#endregion

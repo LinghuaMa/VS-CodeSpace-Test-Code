@@ -103,8 +103,6 @@ def test_othertempcodespace(hastext: string, assertserver:string, playwright: Pl
     codespace_page.wait_for_timeout(1000)
     codespace_page.locator("a", has_text="Ports").click()
     if "jupyter" not in jsonfiletext:
-        # if codespace_page.locator(portsselector).get_attribute('aria-selected')=="false":
-        #     codespace_page.locator(portsselector).click()
         for i in range(50):
             if codespace_page.get_by_role("listitem", name="Remote port").nth(0).inner_text().split("\n")[2]=="":
                 codespace_page.wait_for_timeout(5000)

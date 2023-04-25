@@ -19,13 +19,11 @@ def test_codespace_auto_stop(playwright : Playwright):
     page.keyboard.press("ArrowDown")
     page.keyboard.press("Enter")
     page.wait_for_timeout(1000)
-    vscstargetselector="div.Box-body.p-0 > form > div:nth-child(5) > div > details > summary"
-    page.locator(vscstargetselector).click()
-    for i in range(3):
-        page.keyboard.press("ArrowDown")
-    page.keyboard.press("Enter")
+    
+    page.get_by_role("button", name="production").count()
+    page.get_by_role("menuitemradio", name="pre-production").check()
     page.wait_for_timeout(1000)
-    assert  page.locator(vscstargetselector).inner_text()=="pre-production"     
+    assert  page.get_by_role("button", name="pre-production").is_visible()     
     page.wait_for_timeout(2000)
     page.get_by_role("button", name="Create codespace").click()
     page.wait_for_timeout(200*1000)

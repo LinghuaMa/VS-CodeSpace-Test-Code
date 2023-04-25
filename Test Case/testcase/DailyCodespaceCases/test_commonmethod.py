@@ -4,11 +4,12 @@ import uuid
 import pytest
 import autoit
 import getpass
+import uuid
 from playwright.async_api import Page, Playwright, Browser
 
 def test_newtemplatepage(playwright: Playwright, pageurl: string)-> Page:
     browser = playwright.chromium.launch(headless=False)
-    context = browser.new_context(storage_state="cwayma")
+    context = browser.new_context(storage_state="cway")
     page = context.new_page()
     page.goto(pageurl)
     return page
@@ -21,7 +22,7 @@ def test_open_page_sso(playwright: Playwright, pageurl: string)-> Page:
                                                 slow_mo=1000,
                                                 channel="msedge")    
     page = context.new_page()
-    page.storage_state="cwayma"
+    page.storage_state="cway"
     page.goto(pageurl)
     if page.get_by_text("Single sign-on").is_visible():
         page.get_by_text("Single sign-on").click()
@@ -72,7 +73,7 @@ def test_getgithubuser() -> string:
 
 def test_getusenamefromcookiefile() -> string:
     # read cookies from the json file
-    with open('cwayma', 'r') as f:
+    with open('cway', 'r') as f:
       cookies = json.load(f)
     # get a value from the cookies array by name
     for cookie in cookies["cookies"]:
@@ -96,7 +97,15 @@ def test_create_ppe_codespace(page: Page, reponame: string):
     page.wait_for_timeout(1000)
 
 def test_upload_install_vsix(page: Page):
+    page.wait_for_timeout(2000)
+    page.get_by_role("tab", name="Extensions").click()
+    page.get_by_label("Search Extensions in Marketplace").fill("github codespace")
+    page.locator("div[class=extension-list-item]").filter(has_text="GitHub Codespaces").nth(0).click()
+    githubcodespaceversion=page.get_by_title("Extension Version").inner_text()
+    page.wait_for_timeout(2000)
+    page.keyboard.press("Control+Shift+E")
     for i in range(10):
+        page.wait_for_timeout(2500)
         if ".vsix" not in page.locator("#workbench\.view\.explorer > div > div > div.monaco-scrollable-element > div.split-view-container > div:nth-child(1) > div > div.pane-body").inner_text():
             # if not autoit.win_exists("[CLASS:#32770]"):
             page.mouse.click(x=150, y=500, delay=0, button="right")
@@ -113,7 +122,7 @@ def test_upload_install_vsix(page: Page):
             autoit.control_send("[CLASS:#32770]", "Edit1", 'C:\\Users\\v-margema\\Downloads\\codespaces-1.14.6.vsix')
             page.wait_for_timeout(2000)
             autoit.control_click("[Class:#32770]", "Button1")
-            page.wait_for_timeout(5000)
+            page.wait_for_timeout(6000)
         else:
             break
     page.get_by_role("treeitem").filter(has_text="vsix").click()
@@ -126,7 +135,12 @@ def test_upload_install_vsix(page: Page):
         page.get_by_role("treeitem").filter(has_text="vsix").click(button="right")
         page.wait_for_timeout(500)
     page.click("text=Install Extension VSIX")
-    page.wait_for_timeout(5000)
+    page.wait_for_timeout(3000)
+    page.get_by_role("tab", name="Extensions").click()
+    page.locator("div[class=extension-list-item]").filter(has_text="GitHub Codespaces").nth(0).click()
+    githubcodeInstalledversion=page.get_by_title("Extension Version").inner_text()
+    assert githubcodeInstalledversion > githubcodespaceversion
+    page.wait_for_timeout(1000)
     page.get_by_title("Reload Now").click()
     page.wait_for_timeout(15000)
 
@@ -141,7 +155,7 @@ def test_create_microsoft_repo(playwright: Playwright):
                                                 slow_mo=1000,
                                                 channel="msedge")    
     page = context.new_page()
-    page.storage_state="cwayma"
+    page.storage_state="cway"
     page.goto(pageurl)
     test_create_ppe_codespace(page, "Microsoft/vscode-remote-try-node")
     page.get_by_role("button", name="Create codespace").click()
