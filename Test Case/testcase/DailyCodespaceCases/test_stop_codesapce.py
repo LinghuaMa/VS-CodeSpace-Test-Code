@@ -20,7 +20,7 @@ def test_codespace_auto_stop(playwright : Playwright):
     page.keyboard.press("Enter")
     page.wait_for_timeout(1000)
     
-    page.get_by_role("button", name="production").count()
+    page.get_by_role("button", name="production").click()
     page.get_by_role("menuitemradio", name="pre-production").check()
     page.wait_for_timeout(1000)
     assert  page.get_by_role("button", name="pre-production").is_visible()     

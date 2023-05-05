@@ -2,7 +2,7 @@ import pytest
 import string
 import getpass
 from playwright.sync_api import Page, Playwright
-from test_commonmethod import test_open_page_sso,test_newtemplatepage,test_create_ppe_codespace,test_createAndinstall
+from test_commonmethod import test_open_page_sso,test_create_ppe_codespace,test_createAndinstall
 
 @pytest.mark.exportChanges
 def test_export_changes_to_fork(playwright: Playwright):

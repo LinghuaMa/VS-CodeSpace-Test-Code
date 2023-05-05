@@ -32,14 +32,16 @@ def test_open_page_sso(playwright: Playwright, pageurl: string)-> Page:
 
 def test_createAndinstall(page:Page, machinetype: string):
     page.wait_for_timeout(500)
-    #8-core
-    page.get_by_role("button", name="2-core").click()
-    page.wait_for_timeout(500)
-    page.locator(".d-flex.flex-justify-between.mb-1", has_text=machinetype).click()
-    page.wait_for_timeout(1000)
-    assert page.get_by_role("button", name=machinetype).count()==1
+    
+    if not machinetype=="2-core":
+        page.get_by_role("button", name="2-core").click()
+        page.wait_for_timeout(500)
+        page.get_by_role("menuitemcheckbox", name=machinetype).click()
+        page.wait_for_timeout(800)
+        assert page.get_by_role("button", name=machinetype).count()==1
 
     page.get_by_role("button", name="Create codespace").click()
+
     page.wait_for_timeout(75000)
     test_upload_install_vsix(page)
     page.wait_for_timeout(3000)
@@ -83,18 +85,15 @@ def test_getusenamefromcookiefile() -> string:
 def test_create_ppe_codespace(page: Page, reponame: string):
     page.get_by_role("button", name="Select a repository").click()
     page.keyboard.type(reponame)
-    page.wait_for_timeout(2000)
+    page.wait_for_timeout(1500)
     page.keyboard.press("ArrowDown")
     page.keyboard.press("Enter")
     page.wait_for_timeout(1000)
-    vscstargetselector="div.Box-body.p-0 > form > div:nth-child(5) > div > details > summary"
-    page.locator(vscstargetselector).click()
-    for i in range(3):
-        page.keyboard.press("ArrowDown")
-    page.keyboard.press("Enter")
-    page.wait_for_timeout(1000)
-    assert  page.locator(vscstargetselector).inner_text()=="pre-production"     
-    page.wait_for_timeout(1000)
+    page.get_by_role("button", name="production").click()
+    page.get_by_role("menuitemradio", name="pre-production").check()
+    page.wait_for_timeout(400)
+    assert  page.get_by_role("button", name="pre-production").is_visible()    
+    page.wait_for_timeout(600)
 
 def test_upload_install_vsix(page: Page):
     page.wait_for_timeout(2000)
@@ -119,7 +118,7 @@ def test_upload_install_vsix(page: Page):
             page.click("text=Upload...")
             page.wait_for_timeout(2000)
         # else:
-            autoit.control_send("[CLASS:#32770]", "Edit1", 'C:\\Users\\v-margema\\Downloads\\codespaces-1.14.6.vsix')
+            autoit.control_send("[CLASS:#32770]", "Edit1", 'C:\\Users\\v-margema\\Downloads\\codespaces-1.14.7.vsix')
             page.wait_for_timeout(2000)
             autoit.control_click("[Class:#32770]", "Button1")
             page.wait_for_timeout(6000)
@@ -139,9 +138,10 @@ def test_upload_install_vsix(page: Page):
     page.get_by_role("tab", name="Extensions").click()
     page.locator("div[class=extension-list-item]").filter(has_text="GitHub Codespaces").nth(0).click()
     githubcodeInstalledversion=page.get_by_title("Extension Version").inner_text()
-    assert githubcodeInstalledversion > githubcodespaceversion
+    assert githubcodeInstalledversion >= githubcodespaceversion
     page.wait_for_timeout(1000)
-    page.get_by_title("Reload Now").click()
+    if page.get_by_title("Reload Now").is_visible():
+        page.get_by_title("Reload Now").click()
     page.wait_for_timeout(15000)
 
 

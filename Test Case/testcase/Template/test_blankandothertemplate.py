@@ -10,8 +10,7 @@ from test_commoncode import test_open_page_sso,test_getgithubuserrepo, test_term
 def test_create_blank_template_codespace(playwright: Playwright) -> None:
     new_page=chooseppeoption(playwright,"Blank")
     commondactionselecter="div.codicon.error.terminal-command-decoration.xterm-decoration.codicon-terminal-decoration-error"
-    # commondactionselecter="div.codicon.error.terminal-command-decoration.xterm-decoration.codicon-terminal-decoration-error"
-    # terminaltextarea="div.split-view-container > div > div > div > div > div > div.xterm-screen > div.xterm-helpers > textarea"
+   
     test_excutecommandandvalidate(new_page,commondactionselecter,"git status","fatal: not a git repository")
     test_addnewfileandnavigatetosoucontrol(new_page)
     new_page.get_by_role("button").filter(has_text="Publish to GitHub").click()
