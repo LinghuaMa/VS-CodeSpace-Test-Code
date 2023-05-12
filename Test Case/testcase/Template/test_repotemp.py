@@ -7,47 +7,47 @@ from test_commoncode import test_newtemplatepage,test_terminalcommand,test_getus
 
 #region Repository Templates
 @pytest.mark.blanktemplate
-def test_blankRepositoryTemplates(playwright: Playwright):
+def test_blankOpenInCodespace(playwright: Playwright):
     blankrepotemp="codespaces-blank"
     test_open_in_codespace(playwright, blankrepotemp)
 
 @pytest.mark.railstemplate
-def test_railsRepositoryTemplates(playwright: Playwright):
+def test_railsOpenInCodespace(playwright: Playwright):
     railsrepotemp="codespaces-rails"
     test_open_in_codespace(playwright, railsrepotemp)
 
 @pytest.mark.reacttemplate
-def test_reactRepositoryTemplates(playwright: Playwright):
+def test_reactOpenInCodespace(playwright: Playwright):
     reactrepotemp="codespaces-react"
     test_open_in_codespace(playwright, reactrepotemp)
 
 @pytest.mark.jupytertemplate
-def test_jupyterRepositoryTemplates(playwright: Playwright):
+def test_jupyterOpenInCodespace(playwright: Playwright):
     jupyterrepotemp="codespaces-jupyter"
     test_open_in_codespace(playwright, jupyterrepotemp)
 
 @pytest.mark.expresstemplate
-def test_expressRepositoryTemplates(playwright: Playwright):
+def test_expressOpenInCodespace(playwright: Playwright):
     expressrepotemp="codespaces-express"
     test_open_in_codespace(playwright, expressrepotemp)
 
 @pytest.mark.djangotemplate
-def test_djangoRepositoryTemplates(playwright: Playwright):
+def test_djangoOpenInCodespace(playwright: Playwright):
     djangorepotemp="codespaces-django"
     test_open_in_codespace(playwright, djangorepotemp)
 
 @pytest.mark.nextjstemplate
-def test_nextjsRepositoryTemplates(playwright: Playwright):
+def test_nextjsOpenInCodespace(playwright: Playwright):
     nextjsrepotemp="codespaces-nextjs"
     test_open_in_codespace(playwright, nextjsrepotemp)
 
 @pytest.mark.flasktemplate
-def test_flaskRepositoryTemplates(playwright: Playwright):
+def test_flaskOpenInCodespace(playwright: Playwright):
     flaskrepotemp="codespaces-flask"
     test_open_in_codespace(playwright, flaskrepotemp)
 
 @pytest.mark.preacttemplate
-def test_preactRepositoryTemplates(playwright: Playwright):
+def test_preactOpenInCodespace(playwright: Playwright):
     preactrepotemp="codespaces-preact"
     test_open_in_codespace(playwright, preactrepotemp)
     
