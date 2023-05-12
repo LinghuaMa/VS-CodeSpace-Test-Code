@@ -153,3 +153,13 @@ def test_connect_lastopened_folder(playwright : Playwright):
     assert "Home [Codespaces]" in new_page.text_content("h3")
     new_page.close()
     page.close()
+
+
+@pytest.mark.stopandconnect
+def test_connect_stress_testing(playwright : Playwright):
+    tempurl="https://github.com/codespaces"
+    page=test_newtemplatepage(playwright, tempurl)
+    page.wait_for_timeout(1500)
+    page.locator("a[data-test-selector='codespace-url']", has_text="✨").nth(0).click()
+    new_page=page.wait_for_event('popup')
+    new_page.wait_for_timeout(30000)
