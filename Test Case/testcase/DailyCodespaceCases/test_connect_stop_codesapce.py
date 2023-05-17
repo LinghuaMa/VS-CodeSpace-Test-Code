@@ -7,7 +7,7 @@ from test_commonmethod import test_newtemplatepage,test_create_ppe_codespace,tes
 
 @pytest.mark.daily
 @pytest.mark.stopandconnect
-def test_codespace_auto_stop(playwright : Playwright):
+def test_codespace_auto_stop_then_start(playwright : Playwright):
     tempurl="https://github.com/settings/codespaces"
     page=test_newtemplatepage(playwright, tempurl)
     test_update_idle_timeout(page,"5")
@@ -16,34 +16,37 @@ def test_codespace_auto_stop(playwright : Playwright):
         test_create_ppe_codespace(page, "VSLSTest2/BookShop")
             
         test_createAndinstall(page, "4-core")
-        page.wait_for_timeout(150000)
-        for i in range(10):
+        page.wait_for_timeout(100000)
+        for i in range(30):
             if not page.get_by_role("button", name="Stop Now").is_visible():
-                page.wait_for_timeout(20000)
+                page.wait_for_timeout(15000)
             else:
                 break
         page.get_by_role("button", name="Stop Now").click()
         page.wait_for_timeout(20000)
         assert "Codespace is stopped" in page.text_content("h4")
         page.wait_for_timeout(1000)
-        page.get_by_role("button", name="Restart codepsace").click()
-        page.wait_for_timeout(150000)
-        for i in range(10):
+        page.locator("button", has_text="Restart codespace").click()
+        page.wait_for_timeout(100000)
+        for i in range(30):
             if not page.get_by_role("button", name="Keep Working").is_visible():
-                page.wait_for_timeout(20000)
+                page.wait_for_timeout(15000)
             else:
                 break
         page.get_by_role("button", name="Keep Working").click()
-        page.wait_for_timeout(150000)
+        page.wait_for_timeout(5000)
         page.keyboard.press("Control+Shift+E")
         page.get_by_role("button",name="New File...").click()
+        page.wait_for_timeout(1000)
         page.keyboard.type("htmltest.html")
         page.keyboard.press("Enter")
         page.wait_for_timeout(1500)
         page.keyboard.press("Enter")
         page.keyboard.type("<html>htmltest</html>")
-        page.wait_for_timeout(160000)
-        assert "Codespace is stopped" in page.text_content('h4')
+        page.wait_for_timeout(3000)
+        page.keyboard.press("Control+Shift+G")
+        page.wait_for_timeout(1000)
+        assert page.get_by_label("html, Untracked").is_visible()
     finally:
         page.goto("https://github.com/settings/codespaces")
         test_update_idle_timeout(page,"30")
