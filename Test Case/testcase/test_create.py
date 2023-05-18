@@ -69,7 +69,7 @@ def test_showall_codespace_template(playwright: Playwright) -> None:
 
     #see all template
     page.locator("body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-sidebar.p-2 > ul > li:nth-child(1) > nav-list > ul > li > ul > li:nth-child(2)").click()
-    assert 'Choose a template' in page.text_content('h1')
+    assert page.locator(".application-main", has_text="Choose a template").is_visible()
     page.wait_for_timeout(3000)
 
 @pytest.mark.opennewcodespacepage

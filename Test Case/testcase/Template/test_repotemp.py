@@ -135,6 +135,6 @@ def test_create_new_repository(playwright: Playwright, repotemp: string):
     page.locator("#new_repository_name").fill(repotemp+guid)
     page.locator("button", has_text="Create repository from template" ).click()
     page.wait_for_timeout(9999)
-    assert "Latest commit" in page.text_content("h2")
+    assert page.locator("a", has_text="github/"+repotemp).count()>0
     page.wait_for_timeout(3000)
 #endregion

@@ -9,26 +9,28 @@ from test_commoncode import test_open_page_sso,test_getgithubuserrepo, test_term
 @pytest.mark.blanktemplate
 def test_create_blank_template_codespace(playwright: Playwright) -> None:
     new_page=chooseppeoption(playwright,"Blank")
-    commondactionselecter="div.codicon.error.terminal-command-decoration.xterm-decoration.codicon-terminal-decoration-error"
-   
-    test_excutecommandandvalidate(new_page,commondactionselecter,"git status","fatal: not a git repository")
-    test_addnewfileandnavigatetosoucontrol(new_page)
-    new_page.get_by_role("button").filter(has_text="Publish to GitHub").click()
-    
-    oldreponame=new_page.get_by_role("combobox").input_value()
-    guid = uuid.uuid4().hex
-    new_page.get_by_role("combobox").fill(oldreponame+guid)
-    new_page.wait_for_timeout(1000)
-    new_page.keyboard.press("ArrowDown")
-    new_page.keyboard.press("Enter")
-    new_page.wait_for_timeout(1000)
-    new_page.keyboard.press("Tab")
-    new_page.keyboard.press("Enter")
-    new_page.wait_for_timeout(3000)
+    try:
+        commondactionselecter="div.codicon.error.terminal-command-decoration.xterm-decoration.codicon-terminal-decoration-error"
+        new_page.wait_for_timeout(180000)
+        test_excutecommandandvalidate(new_page,commondactionselecter,"git status","fatal: not a git repository")
+        test_addnewfileandnavigatetosoucontrol(new_page)
+        new_page.get_by_role("button").filter(has_text="Publish to GitHub").click()
+        
+        oldreponame=new_page.get_by_role("combobox").input_value()
+        guid = uuid.uuid4().hex
+        new_page.get_by_role("combobox").fill(oldreponame+guid)
+        new_page.wait_for_timeout(1000)
+        new_page.keyboard.press("ArrowDown")
+        new_page.keyboard.press("Enter")
+        new_page.wait_for_timeout(1000)
+        new_page.keyboard.press("Tab")
+        new_page.keyboard.press("Enter")
+        new_page.wait_for_timeout(3000)
 
-    test_getgithubuserrepo(new_page, oldreponame+guid)
-    new_page.wait_for_timeout(3000)
-    new_page.close()
+        test_getgithubuserrepo(new_page, oldreponame+guid)
+        new_page.wait_for_timeout(3000)
+    finally:
+        new_page.close()
 #endregion Blank Template
 
 #region Other Templates
@@ -66,71 +68,73 @@ def test_preacttemplate(playwright: Playwright):
 
 def test_othertempcodespace(hastext: string, assertserver:string, playwright: Playwright):
     codespace_page=chooseppeoption(playwright,hastext)
-    codespace_page.wait_for_load_state()
-    codespace_page.wait_for_timeout(120000)
-    # open devcontainer.json file
-    codespace_page.keyboard.press("Control+Shift+E")
-    codespace_page.locator(".monaco-tl-row", has_text=".devcontainer").click()
-    codespace_page.wait_for_timeout(800)
-    codespace_page.locator(".monaco-tl-contents", has_text="devcontainer.json").click()
-    jsonfiletextselector="div:nth-child(3) > div > div > div > div > div:nth-child(3) > div > div > div > div.split-view-container > div:nth-child(1)"
-    openfilenameselector=".tab.tab-actions-right.sizing-fit.has-icon"
-    codespace_page.wait_for_timeout(1000)
-    jsonfiletext=codespace_page.locator(jsonfiletextselector).inner_text()
-    if "jupyter" not in jsonfiletext:
-        assert codespace_page.query_selector_all(openfilenameselector)[0].inner_text() in jsonfiletext
+    try:
+        codespace_page.wait_for_load_state()
+        codespace_page.wait_for_timeout(120000)
+        # open devcontainer.json file
+        codespace_page.keyboard.press("Control+Shift+E")
+        codespace_page.locator(".monaco-tl-row", has_text=".devcontainer").click()
+        codespace_page.wait_for_timeout(800)
+        codespace_page.locator(".monaco-tl-contents", has_text="devcontainer.json").click()
+        jsonfiletextselector="div:nth-child(3) > div > div > div > div > div:nth-child(3) > div > div > div > div.split-view-container > div:nth-child(1)"
+        openfilenameselector=".tab.tab-actions-right.sizing-fit.has-icon"
         codespace_page.wait_for_timeout(1000)
-        assert assertserver in jsonfiletext
-        #open a new terminal and validate git status
+        jsonfiletext=codespace_page.locator(jsonfiletextselector).inner_text()
+        if "jupyter" not in jsonfiletext:
+            assert codespace_page.query_selector_all(openfilenameselector)[0].inner_text() in jsonfiletext
+            codespace_page.wait_for_timeout(1000)
+            assert assertserver in jsonfiletext
+            #open a new terminal and validate git status
+            codespace_page.wait_for_timeout(10000)
+            codespace_page.get_by_text("bash").click()
         codespace_page.wait_for_timeout(10000)
-        codespace_page.get_by_text("bash").click()
-    codespace_page.wait_for_timeout(10000)
-    #validate git-status
-    commondactionselecter="div.terminal-command-decoration.codicon.xterm-decoration.codicon-terminal-decoration-success"
-    test_excutecommandandvalidate(codespace_page, commondactionselecter, "git status","nothing to commit, working tree clean")
-    #validate git-log       div.xterm-decoration-container > div:nth-child(2)
-    commondactionselecter="div.xterm-decoration-container > div:nth-child(2)"
-    test_excutecommandandvalidate(codespace_page, commondactionselecter, "git log","Initial commit")
-    
-    test_addnewfileandnavigatetosoucontrol(codespace_page)
-    codespace_page.keyboard.type("add a test html file")
-    codespace_page.wait_for_timeout(1000)
-    codespace_page.get_by_text("Changes", exact=True).hover()
-    codespace_page.get_by_title("Stage All Changes").click()
-    codespace_page.wait_for_timeout(1000)
-    codespace_page.get_by_role("button", name="Commit", exact=True).click()
-    codespace_page.wait_for_timeout(1000)
-    codespace_page.locator("a", has_text="Ports").click()
-    if "jupyter" not in jsonfiletext:
-        for i in range(50):
-            if codespace_page.get_by_role("listitem", name="Remote port").nth(0).inner_text().split("\n")[2]=="":
-                codespace_page.wait_for_timeout(5000)
-            else:
-                break
-        codespace_page.wait_for_timeout(5000)
-        simplebrowserselector="#workbench\.parts\.editor > div.content > div > div > div > div > div.monaco-scrollable-element > div.split-view-container > div:nth-child(2) > div > div.title.tabs.show-file-icons > div.tabs-and-actions-container > div.monaco-scrollable-element > div.tabs-container > div:nth-child(1) >div:nth-child(2)"
+        #validate git-status
+        commondactionselecter="div.terminal-command-decoration.codicon.xterm-decoration.codicon-terminal-decoration-success"
+        test_excutecommandandvalidate(codespace_page, commondactionselecter, "git status","nothing to commit, working tree clean")
+        #validate git-log       div.xterm-decoration-container > div:nth-child(2)
+        commondactionselecter="div.xterm-decoration-container > div:nth-child(2)"
+        test_excutecommandandvalidate(codespace_page, commondactionselecter, "git log","Initial commit")
+        
+        test_addnewfileandnavigatetosoucontrol(codespace_page)
+        codespace_page.get_by_label('Message (Ctrl+Enter to commit on "main")').fill("add a test html file")
+        codespace_page.wait_for_timeout(1000)
+        codespace_page.get_by_text("Changes", exact=True).hover()
+        codespace_page.get_by_title("Stage All Changes").click()
+        codespace_page.wait_for_timeout(1000)
+        codespace_page.get_by_role("button", name="Commit", exact=True).click()
+        codespace_page.wait_for_timeout(1000)
+        codespace_page.locator("a", has_text="Ports").click()
+        if "jupyter" not in jsonfiletext:
+            for i in range(50):
+                if codespace_page.get_by_role("listitem", name="Remote port").nth(0).inner_text().split("\n")[2]=="":
+                    codespace_page.wait_for_timeout(5000)
+                else:
+                    break
+            codespace_page.wait_for_timeout(5000)
+            simplebrowserselector="#workbench\.parts\.editor > div.content > div > div > div > div > div.monaco-scrollable-element > div.split-view-container > div:nth-child(2) > div > div.title.tabs.show-file-icons > div.tabs-and-actions-container > div.monaco-scrollable-element > div.tabs-container > div:nth-child(1) >div:nth-child(2)"
 
-        assert 'Simple Browser' in codespace_page.locator(simplebrowserselector).inner_text()
-    
-    codespace_page.wait_for_timeout(1000)
-    codespace_page.get_by_role("button", name="Publish Branch").click()
-    # reponame="#js-vscode-workbench-placeholder > div > div.quick-input-widget.show-file-icons > div.quick-input-header > div.quick-input-and-message > div.quick-input-filter > div.quick-input-box > div > div.monaco-inputbox.idle > div > input"
-    oldreponame=codespace_page.get_by_role("combobox").input_value()
-    guid = uuid.uuid4().hex
-    codespace_page.get_by_role("combobox").fill(oldreponame+guid)
-    codespace_page.wait_for_timeout(2000)
-    codespace_page.keyboard.press("ArrowDown")
-    codespace_page.keyboard.press("Enter")
-    codespace_page.wait_for_timeout(2000)
-    test_getgithubuserrepo(codespace_page, oldreponame+guid)
-    codespace_page.wait_for_timeout(3000)
-    codespace_page.close()    
+            assert 'Simple Browser' in codespace_page.locator(simplebrowserselector).inner_text()
+        
+        codespace_page.wait_for_timeout(1000)
+        codespace_page.get_by_role("button", name="Publish Branch").click()
+        # reponame="#js-vscode-workbench-placeholder > div > div.quick-input-widget.show-file-icons > div.quick-input-header > div.quick-input-and-message > div.quick-input-filter > div.quick-input-box > div > div.monaco-inputbox.idle > div > input"
+        oldreponame=codespace_page.get_by_role("combobox").input_value()
+        guid = uuid.uuid4().hex
+        codespace_page.get_by_role("combobox").fill(oldreponame+guid)
+        codespace_page.wait_for_timeout(2000)
+        codespace_page.keyboard.press("ArrowDown")
+        codespace_page.keyboard.press("Enter")
+        codespace_page.wait_for_timeout(2000)
+        test_getgithubuserrepo(codespace_page, oldreponame+guid)
+        codespace_page.wait_for_timeout(3000)
+    finally:
+        codespace_page.close()    
 
 def chooseppeoption(playwright:Playwright,hastext: string)->Page:
     tempurl="https://github.com/codespaces/templates"
     page=test_open_page_sso(playwright, tempurl)
     page.context.pages[-2].close()
-    assert "Choose a template" in page.text_content('h1')
+    assert page.locator(".application-main", has_text="Choose a template").is_visible()
 
     page.locator(".form-select.mt-1.color-bg-subtle").nth(0).click()
     page.keyboard.press("ArrowDown")
@@ -138,10 +142,11 @@ def chooseppeoption(playwright:Playwright,hastext: string)->Page:
     assert page.locator(".form-select.mt-1.color-bg-subtle").nth(0).input_value()=="ppe"
     page.locator("li",has_text=hastext).locator("button").click()
     new_page=page.wait_for_event('popup')
+    page.close()
     return new_page
 
 #create a new file named htmltest.html and Navigate to the Source Control panel
-def test_addnewfileandnavigatetosoucontrol(new_page:Page)->Page:
+def test_addnewfileandnavigatetosoucontrol(new_page:Page):
     new_page.keyboard.press("Control+Shift+E")
     new_page.get_by_role("button",name="New File...").click()
     new_page.keyboard.type("htmltest.html")
@@ -151,7 +156,7 @@ def test_addnewfileandnavigatetosoucontrol(new_page:Page)->Page:
     new_page.keyboard.type("<html>htmltest</html>")
     new_page.keyboard.press("Control+Shift+G")
     new_page.wait_for_timeout(1000)
-    return new_page
+    
 
 def test_excutecommandandvalidate(codespace_page:Page, commondactionselecter:string,  terminalcommand:string, assertstr:string):
     if "fatal: not a git repository"!=assertstr:

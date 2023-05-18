@@ -94,13 +94,16 @@ def test_changeoptions_preactVanityURLs(playwright: Playwright):
 
 def test_create_production_codespace(playwright: Playwright, tempurl: string):
     page=test_newtemplatepage(playwright, tempurl)
-    if page.locator("a", has_text="Resume this codespace").is_visible():
-        page.get_by_role("button", name="Codespace configuration").click()
-        page.get_by_role("menuitem", name="Delete").click()
-        page.on("dialog", lambda dialog: dialog.accept())
-        page.keyboard.press("Enter")
-        page.wait_for_timeout(3000)
-        page.reload()
+    for i in range(10):
+        if page.locator("a", has_text="Resume this codespace").is_visible():
+            page.get_by_role("button", name="Codespace configuration").click()
+            page.get_by_role("menuitem", name="Delete").click()
+            page.on("dialog", lambda dialog: dialog.accept())
+            page.keyboard.press("Enter")
+            page.wait_for_timeout(3000)
+            page.reload()
+        else:
+            break
     page.locator("button", has_text="Create new codespace").click()
     page.wait_for_timeout(75000)
     if not "blank" in tempurl:

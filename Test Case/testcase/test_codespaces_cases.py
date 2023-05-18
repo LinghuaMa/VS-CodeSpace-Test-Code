@@ -21,7 +21,7 @@ def test_use_react_template_create_codespace(playwright: Playwright) -> None:
     templatemaindiv="body > div.logged-in.env-production.page-responsive > div.application-main > main > div"
     showallbuttonselector=templatemaindiv+"> div.Layout-sidebar.p-2 > ul > li:nth-child(1) > nav-list > ul > li > ul > li:nth-child(2)"
     page.locator(showallbuttonselector).click()
-    assert 'Choose a template' in page.text_content('h1')
+    assert page.locator(".application-main", has_text="Choose a template").is_visible()
     
     sleep(1500)
     reacttemplateselector=templatemaindiv+" > div.Layout-main > codespace-zero-config > ol > li:nth-child(3) > div > div:nth-child(3) > form > button"
@@ -61,7 +61,7 @@ def test_repositorytempandexportcodespace(playwright: Playwright, buttonselector
     buttonselector
     tempurl="https://github.com/codespaces/templates"
     page=test_newtemplatepage(playwright, tempurl)
-    assert "Choose a template" in page.text_content('h1')
+    assert page.locator(".application-main", has_text="Choose a template").is_visible()
 
     ppeselector="body > div.logged-in.env-production.page-responsive > div.application-main > main > div > div.Layout-main > codespace-zero-config > div > div:nth-child(2) > div > select"
     page.locator(ppeselector).click()
