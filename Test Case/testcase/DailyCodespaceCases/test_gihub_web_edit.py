@@ -83,14 +83,15 @@ def test_pull_request(playwright: Playwright):
     finally:
         page.close()
 
-@pytest.mark.githubedit #https://ppe.github.dev/JoannaWu-wd/testRepository/pull/2  need joannawu help
+@pytest.mark.githubedit 
 def test_pull_request_from_a_fork(playwright: Playwright):
     pageurl="https://ppe.github.dev/JoannaWu-wd/testRepository/pull/2"
     page=test_sso_login(playwright, pageurl)
     try:
         page.context.pages[-2].close()
-        page.wait_for_timeout(30000)
-        assert page.get_by_role("button", name="git-pull-request  Pull Request #4953").is_visible()
+        page.wait_for_timeout(15000)
+        assert page.get_by_role("button", name="git-pull-request  Pull Request #2").is_visible()
+        assert page.get_by_role("listitem").filter(has_text="Newfile").get_by_title("\\JoannaWu-wd\\testRepository\\Newfile").is_visible()
     finally:
         page.close()
 

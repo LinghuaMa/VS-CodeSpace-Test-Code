@@ -26,7 +26,7 @@ def test_change_option_create_ppe_codespace(playwright:Playwright, tempurl: stri
     page.get_by_role("button", name="Create codespace").click()
 
     page.wait_for_timeout(75000)
-    if not "blank" in tempurl:
+    if page.get_by_title(".devcontainer").is_visible():
         for i in range(20):
             if not page.locator("a", has_text="bash").is_visible():
                 page.wait_for_timeout(20000)
@@ -106,7 +106,7 @@ def test_create_production_codespace(playwright: Playwright, tempurl: string):
             break
     page.locator("button", has_text="Create new codespace").click()
     page.wait_for_timeout(75000)
-    if not "blank" in tempurl and not "jupyter" in tempurl:
+    if page.get_by_title(".devcontainer").is_visible():
         if page.locator("a", has_text="bash").is_visible():
             page.locator("a", has_text="bash").click()
             page.wait_for_timeout(100)

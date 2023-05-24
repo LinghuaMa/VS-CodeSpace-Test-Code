@@ -104,7 +104,7 @@ def test_codespace_openPublicPort(playwright: Playwright):
     tempurl="https://github.com/codespaces"
     browser = playwright.chromium.launch(headless=False)
     try:
-        context = browser.new_context(storage_state="cway01")
+        context = browser.new_context(storage_state="cway")
         page = context.new_page()
         page.goto(tempurl)
         test_opencodespace_runnpm(page)
