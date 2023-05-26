@@ -48,7 +48,7 @@ def test_codespace_copyports(playwright: Playwright):
         page.close()
 
 # 16-core WestEurope
-@pytest.mark.forwardport  
+@pytest.mark.forwardport
 def test_codespace_openports(playwright: Playwright):
     tempurl="https://github.com/codespaces"
     page=test_open_page_sso(playwright, tempurl)
@@ -57,8 +57,8 @@ def test_codespace_openports(playwright: Playwright):
         test_opencodespace_runnpm(page)
 
         page.wait_for_timeout(1000)
-        page.locator(".monaco-icon-label-container", has_text="3000").nth(0).click()
-        page.locator(".monaco-icon-label-container", has_text="3000").nth(0).click(button="right")
+        page.get_by_label("Port has running process").nth(0).click()
+        page.get_by_label("Port has running process").nth(0).click(button="right")
         # page.click("div[id='list_id_4_0']",button="right")
         page.wait_for_timeout(500)
         page.click("text=Copy Local Address")
@@ -69,9 +69,10 @@ def test_codespace_openports(playwright: Playwright):
         page.keyboard.press("Control+V")
         url1=page.get_by_placeholder("Search").input_value()
         page1=test_newtemplatepage(playwright,url1)
+        page.wait_for_timeout(2000)
         assert "Visual Studio Live Share Guestbook" in page1.text_content("h1")
         page1.close()
-
+        page.wait_for_timeout(3000)
         page.keyboard.press("Control+Shift+P")
         page.keyboard.type("Copy Forwarded Port Address")
         page.keyboard.press("ArrowDown")
@@ -86,15 +87,16 @@ def test_codespace_openports(playwright: Playwright):
         page2.close()
 
         page.wait_for_timeout(3000)
-        page.locator(".monaco-icon-label-container", has_text="3000").nth(0).click()
+        page.get_by_label("Port has running process").nth(0).click()
         page.get_by_role("listitem", name="Copy Local Address (Ctrl+C)").click()
         page.get_by_placeholder("Search").click()
         page.get_by_placeholder("Search").clear()
         page.keyboard.press("Control+V")
-        url1=page.get_by_placeholder("Search").input_value()
-        page2=test_newtemplatepage(playwright,url1)
-        assert "Visual Studio Live Share Guestbook" in page2.text_content("h1")
-        page2.close()
+        url3=page.get_by_placeholder("Search").input_value()
+        page3=test_newtemplatepage(playwright,url3)
+        page.wait_for_timeout(2000)
+        assert "Visual Studio Live Share Guestbook" in page3.text_content("h1")
+        page3.close()
         page.wait_for_timeout(3000)
     finally:
         page.close()
@@ -114,7 +116,7 @@ def test_codespace_openPublicPort(playwright: Playwright):
         page.click("text=Preview in Editor")
         page.keyboard.press("Enter")
         page.wait_for_timeout(1500)
-        assert page.get_by_role("tab").get_by_title("Simple Browser").count()>0
+        assert page.get_by_role("tab").get_by_title("Simple Browser").is_visible()
 
         page.click("div[id='list_id_4_0']",button="right")
         page.wait_for_timeout(500)
@@ -122,7 +124,7 @@ def test_codespace_openPublicPort(playwright: Playwright):
         page.wait_for_timeout(500)
         page.get_by_role("menuitemcheckbox", name="Public").click()
         page.wait_for_timeout(1500)
-        page.locator(".monaco-icon-label-container", has_text="3000").nth(0).click()
+        page.get_by_label("Port has running process").nth(0).click()
         page.get_by_role("listitem", name="Copy Local Address (Ctrl+C)").click()
         
         page.keyboard.press("Control+Shift+F")
@@ -161,7 +163,7 @@ def test_codespace_openPublicPort(playwright: Playwright):
         page.get_by_role("menuitemcheckbox", name="Public").click()
         page.wait_for_timeout(2000)
     finally:
-        browser.close()
+        page.close()
 
 @pytest.mark.forwardport   
 def test_codespace_protocol_ports(playwright: Playwright):
@@ -308,13 +310,13 @@ def test_opencodespace_runnpm(page:Page):
 
     page.locator("a", has_text="Ports").click()
     page.wait_for_timeout(9000)
-    if "3000" not in page.locator("div[id='list_id_4_0']").inner_text():
-        page.locator("a", has_text="Terminal").click()
+    if page.locator("p",  has_text="No forwarded ports. Forward a port to access your running services locally.").is_visible() or not page.get_by_label("Port has running process").is_visible():
+        page.keyboard.press("Control+Shift+`")
         page.wait_for_timeout(3000)
         page.type("div.xterm-helpers > textarea", "npm start")
         page.keyboard.press("Enter")
-        page.wait_for_timeout(500)
         page4=page.wait_for_event('popup')
+        page.wait_for_timeout(1000)
         page4.close()
         page.get_by_text("Ports", exact=True).click()
 

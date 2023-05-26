@@ -65,6 +65,8 @@ def test_repositorytempandexportcodespace(playwright: Playwright, nth: int, temp
     codespace_page=page.wait_for_event('popup')
     codespace_page.wait_for_timeout(120000)
     test_terminalcommand(codespace_page, "git status")
+    test_addnewfileandnavigatetosoucontrol(codespace_page)
+    
     test_validatepublishbutton(codespace_page, tempname)
     
     # Export/Publish from /Codespaces
@@ -80,17 +82,33 @@ def test_repositorytempandexportcodespace(playwright: Playwright, nth: int, temp
     test_getgithubuserrepo(page, tempname+guid)
     page.wait_for_timeout(3000)
 
+def test_addnewfileandnavigatetosoucontrol(page:Page):
+    page.keyboard.press("Control+Shift+E")
+    page.wait_for_timeout(1000)
+    page.mouse.click(x=150, y=500, delay=0, button="left")
+    page.get_by_role("button",name="New File...").click()
+    page.keyboard.type("htmltest.html")
+    page.wait_for_timeout(300)
+    page.keyboard.press("Enter")
+    page.wait_for_timeout(8000)
+    page.keyboard.press("Enter")
+    page.keyboard.type("<html>htmltest</html>")
+    page.keyboard.press("Control+Shift+G")
+    page.wait_for_timeout(1000)
+
 def test_validatepublishbutton(codespace_page: Page, repotemp: string):
-    codespace_page.wait_for_timeout(10000)
-    codespace_page.keyboard.press("Control+Shift+G")
-    codespace_page.wait_for_timeout(10000)
+    codespace_page.wait_for_timeout(8000)
+    
     if "blank" in repotemp:
       assert codespace_page.get_by_role("button",name="Publish to GitHub").is_visible()
     else:
-      if "preact" in repotemp:
-          assert codespace_page.get_by_role("button", name="Commit", exact=True).is_visible()
-      else:
-          assert codespace_page.get_by_role("button",name="Publish Branch").is_visible()
+        codespace_page.get_by_label('Message (Ctrl+Enter to commit on "main")').fill("add a html file for test")
+        codespace_page.get_by_role("treeitem", name="Changes" ).click()
+        codespace_page.get_by_title("Stage All Changes").click()
+        codespace_page.wait_for_timeout(1000)
+        codespace_page.get_by_title('Commit Changes on "main"').click()
+        codespace_page.wait_for_timeout(4000)
+        assert codespace_page.get_by_role("button",name="Publish Branch").is_visible()
     codespace_page.wait_for_timeout(2000)
     codespace_page.close()
 
