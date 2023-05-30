@@ -3,6 +3,11 @@ import string
 import getpass
 from playwright.sync_api import Page, Playwright
 from test_commonmethod import test_getusenamefromcookiefile,test_create_ppe_codespace,test_createAndinstall,test_newtemplatepage
+from test_delete_codespace import test_deleteAllCodespace 
+
+@pytest.mark.dotfiles
+def test_delete_all_codespaces(playwright: Playwright):
+    test_deleteAllCodespace(playwright)
 
 @pytest.mark.dotfiles
 def test_enable_autimaticlly_donot_executable_script(playwright: Playwright):
@@ -24,11 +29,14 @@ def test_enable_autimaticlly_donot_executable_script(playwright: Playwright):
         page.wait_for_timeout(150000)
         for i in range(page.get_by_label("Close (Ctrl+F4)").count()):
             page.get_by_label("Close (Ctrl+F4)").nth(0).click()
+        page.wait_for_timeout(1000)
         page.keyboard.press("Control+Shift+P")
+        page.wait_for_timeout(400)
         page.keyboard.type("codespaces: view creation log")
         page.keyboard.press("ArrowDown")
+        page.wait_for_timeout(400)
         page.keyboard.press("Enter")
-        page.wait_for_timeout(2500)
+        page.wait_for_timeout(3500)
         page.keyboard.press("Control+F")
         page.wait_for_timeout(1000)
         page.get_by_placeholder("Find").fill("dotfiles")
@@ -70,6 +78,7 @@ def test_enable_autimaticlly_have_executable_script(playwright: Playwright):
         page.get_by_role("button", name=test_getusenamefromcookiefile()).click()
         page.wait_for_timeout(999)
         page.get_by_role("textbox", name="Search for a repository").fill("dotfile-2")
+        page.wait_for_timeout(1200)
         page.keyboard.press("ArrowDown")
         page.keyboard.press("Enter")
         page.wait_for_timeout(1000)
@@ -81,11 +90,12 @@ def test_enable_autimaticlly_have_executable_script(playwright: Playwright):
         page.wait_for_timeout(150000)
         for i in range(page.get_by_label("Close (Ctrl+F4)").count()):
             page.get_by_label("Close (Ctrl+F4)").nth(0).click()
+        page.wait_for_timeout(1000)
         page.keyboard.press("Control+Shift+P")
         page.keyboard.type("codespaces: view creation log")
         page.keyboard.press("ArrowDown")
         page.keyboard.press("Enter")
-        page.wait_for_timeout(2500)
+        page.wait_for_timeout(3500)
         page.keyboard.press("Control+F")
         page.wait_for_timeout(1000)
         page.get_by_placeholder("Find").fill("dotfiles")
@@ -125,7 +135,7 @@ def test_verify_dotfiles_disable_autimaticlly_install(playwright: Playwright):
         page.keyboard.type("codespaces: view creation log")
         page.keyboard.press("ArrowDown")
         page.keyboard.press("Enter")
-        page.wait_for_timeout(2500)
+        page.wait_for_timeout(3500)
         page.keyboard.press("Control+F")
         page.wait_for_timeout(1000)
         page.get_by_placeholder("Find").fill("dotfiles")

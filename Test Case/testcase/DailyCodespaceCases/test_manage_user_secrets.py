@@ -2,8 +2,12 @@ import pytest
 from playwright.sync_api import Page, Playwright
 import string
 from test_commonmethod import test_open_page_sso,test_create_ppe_codespace,test_createAndinstall
+from test_delete_codespace import test_deleteAllCodespace 
 
-# 8-core SouthEastAsia
+@pytest.mark.manageSecrets
+def test_delete_all_codespaces(playwright: Playwright):
+    test_deleteAllCodespace(playwright)
+
 @pytest.mark.manageSecrets
 def test_add_secret_within_codespace(playwright: Playwright):
     tempurl="https://github.com/codespaces/new?location=SouthEastAsia"
@@ -161,11 +165,16 @@ def test_delete_update_secret_isnot_applied_current(playwright: Playwright):
         page.keyboard.press("ArrowDown")
         page.keyboard.press("Enter")
         page.locator("a", has_text="TEST01").click()
-        page.locator("a", has_text="Update the value and add this secret to the current repository").click()
+        if page.locator("a", has_text="Update the secret value").is_visible():
+            page.locator("a", has_text="Update the secret value").click()
+        else:
+            if page.locator("a", has_text="Update the value and add this secret to the current repository").is_visible():
+                page.locator("a", has_text="Update the value and add this secret to the current repository").click() 
         page.get_by_placeholder("Enter Secret Value").fill("secret01")
         page.keyboard.press("Enter")
-        page.get_by_title("Reload to apply").click()
-        page.wait_for_timeout(7500)
+        if page.get_by_title("Reload to apply").is_visible():
+            page.get_by_title("Reload to apply").click()
+            page.wait_for_timeout(7500)
 
         page.keyboard.press("Control+Shift+P")
         page.keyboard.type("Codespaces: Manage User Secrets")

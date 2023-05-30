@@ -43,6 +43,7 @@ def test_createAndinstall(page:Page, machinetype: string):
     page.get_by_role("button", name="Create codespace").click()
 
     page.wait_for_timeout(75000)
+    
     test_upload_install_vsix(page)
     page.wait_for_timeout(3000)
 
