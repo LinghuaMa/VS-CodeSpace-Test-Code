@@ -4,6 +4,12 @@ from playwright.sync_api import Page, Playwright, expect
 import re
 import string
 from test_commonmethod import test_newtemplatepage,test_create_ppe_codespace,test_createAndinstall
+from test_delete_codespace import test_deleteAllCodespace 
+
+@pytest.mark.daily
+@pytest.mark.stopandconnect
+def test_delete_all_codespaces(playwright: Playwright):
+    test_deleteAllCodespace(playwright)
 
 @pytest.mark.daily
 @pytest.mark.stopandconnect
@@ -91,6 +97,7 @@ def test_stop_connect_codespace_from_index_page(playwright : Playwright):
         test_update_idle_timeout(page,"30")
         page.close()
 
+@pytest.mark.daily
 @pytest.mark.stopandconnect
 def test_stop_current_codespace(playwright : Playwright):
     tempurl="https://github.com/codespaces"
@@ -114,7 +121,7 @@ def test_stop_current_codespace(playwright : Playwright):
     finally:
         page.close()
     
-
+@pytest.mark.daily
 @pytest.mark.stopandconnect
 def test_stop_current_codespace_F1(playwright : Playwright):
     tempurl="https://github.com/codespaces"
@@ -134,6 +141,7 @@ def test_stop_current_codespace_F1(playwright : Playwright):
     finally:
         page.close()
 
+@pytest.mark.daily
 @pytest.mark.stopandconnect
 def test_stopcodespace_DevPanel(playwright : Playwright):
     tempurl="https://github.com/codespaces"
@@ -152,6 +160,7 @@ def test_stopcodespace_DevPanel(playwright : Playwright):
     finally:
         page.close()
 
+@pytest.mark.daily
 @pytest.mark.stopandconnect
 def test_connect_lastopened_folder(playwright : Playwright):
     tempurl="https://github.com/codespaces"
@@ -181,6 +190,7 @@ def test_open_folder(new_page: Page, folderpath: string):
     new_page.get_by_role("button", name="OK",  exact=True).click()
     new_page.wait_for_timeout(35000)
 
+@pytest.mark.daily
 @pytest.mark.stopandconnect
 def test_connect_stress_testing(playwright : Playwright):
     tempurl="https://github.com/codespaces"
@@ -235,6 +245,7 @@ def test_connect_after_deleting_home_directory(playwright : Playwright):
     finally:
         new_page.close()
 
+@pytest.mark.daily
 @pytest.mark.stopandconnect
 def test_connect_after_renaming_other_directory(playwright : Playwright):
     tempurl="https://github.com/codespaces"

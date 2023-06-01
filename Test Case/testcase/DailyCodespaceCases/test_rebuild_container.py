@@ -5,10 +5,12 @@ from playwright.sync_api import Page, Playwright
 from test_commonmethod import test_open_page_sso,test_create_ppe_codespace,test_createAndinstall,test_upload_install_vsix
 from test_delete_codespace import test_deleteAllCodespace 
 
+@pytest.mark.daily
 @pytest.mark.rebuildcontainer
 def test_delete_all_codespaces(playwright: Playwright):
     test_deleteAllCodespace(playwright)
 
+@pytest.mark.daily
 @pytest.mark.rebuildcontainer
 def test_rebuild_valid_devcontainer(playwright: Playwright):
     tempurl="https://github.com/codespaces/new?location=UsEast"
@@ -39,6 +41,7 @@ def test_rebuild_valid_devcontainer(playwright: Playwright):
     finally:
         page.close()
 
+@pytest.mark.daily
 @pytest.mark.rebuildcontainer
 def test_full_rebuild_codespace(playwright: Playwright):
     pageurl="https://github.com/codespaces"
@@ -61,6 +64,7 @@ def test_full_rebuild_codespace(playwright: Playwright):
     finally:
         page.close()
 
+@pytest.mark.daily
 @pytest.mark.rebuildcontainer   
 def test_create_with_broken_devcontainer(playwright: Playwright):
     tempurl="https://github.com/codespaces/new?location=EastUs"

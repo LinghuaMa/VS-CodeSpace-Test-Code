@@ -5,10 +5,12 @@ from playwright.sync_api import Page, Playwright
 from test_commonmethod import test_getusenamefromcookiefile,test_create_ppe_codespace,test_createAndinstall,test_newtemplatepage
 from test_delete_codespace import test_deleteAllCodespace 
 
+@pytest.mark.daily
 @pytest.mark.dotfiles
 def test_delete_all_codespaces(playwright: Playwright):
     test_deleteAllCodespace(playwright)
 
+@pytest.mark.daily
 @pytest.mark.dotfiles
 def test_enable_autimaticlly_donot_executable_script(playwright: Playwright):
     pageurl="https://github.com/settings/codespaces"
@@ -66,6 +68,7 @@ def test_enable_autimaticlly_donot_executable_script(playwright: Playwright):
             page.locator("#codespace_dotfiles_enabled").click()
         page.close()
 
+@pytest.mark.daily
 @pytest.mark.dotfiles
 def test_enable_autimaticlly_have_executable_script(playwright: Playwright):
     pageurl="https://github.com/settings/codespaces"
@@ -116,6 +119,7 @@ def test_enable_autimaticlly_have_executable_script(playwright: Playwright):
             page.locator("#codespace_dotfiles_enabled").click()
         page.close()
 
+@pytest.mark.daily
 @pytest.mark.dotfiles
 def test_verify_dotfiles_disable_autimaticlly_install(playwright: Playwright):
     pageurl="https://github.com/settings/codespaces"

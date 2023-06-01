@@ -4,10 +4,12 @@ import string
 from test_commonmethod import test_open_page_sso,test_create_ppe_codespace,test_createAndinstall
 from test_delete_codespace import test_deleteAllCodespace 
 
+@pytest.mark.daily
 @pytest.mark.manageSecrets
 def test_delete_all_codespaces(playwright: Playwright):
     test_deleteAllCodespace(playwright)
 
+@pytest.mark.daily
 @pytest.mark.manageSecrets
 def test_add_secret_within_codespace(playwright: Playwright):
     tempurl="https://github.com/codespaces/new?location=SouthEastAsia"
@@ -46,7 +48,7 @@ def test_add_secret_within_codespace(playwright: Playwright):
     finally:
         page.close()
 
-
+@pytest.mark.daily
 @pytest.mark.manageSecrets
 def test_manage_secret_on_github(playwright: Playwright):
     tempurl="https://github.com/codespaces"
@@ -68,6 +70,7 @@ def test_manage_secret_on_github(playwright: Playwright):
     finally:
         page.close()
 
+@pytest.mark.daily
 @pytest.mark.manageSecrets
 def test_remove_then_add_secret_to_current_repo(playwright: Playwright):
     tempurl="https://github.com/codespaces"
@@ -112,7 +115,7 @@ def test_remove_then_add_secret_to_current_repo(playwright: Playwright):
     finally:
         page.close()
 
-
+@pytest.mark.daily
 @pytest.mark.manageSecrets
 def test_update_the_secret_value(playwright: Playwright):
     tempurl="https://github.com/codespaces"
@@ -149,6 +152,7 @@ def test_update_the_secret_value(playwright: Playwright):
     finally:
         page.close()
 
+@pytest.mark.daily
 @pytest.mark.manageSecrets
 def test_delete_update_secret_isnot_applied_current(playwright: Playwright):
     tempurl="https://github.com/codespaces"

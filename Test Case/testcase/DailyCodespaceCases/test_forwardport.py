@@ -2,8 +2,14 @@ import pytest
 from playwright.sync_api import Page, Playwright
 import string
 from test_commonmethod import test_newtemplatepage,test_open_page_sso,test_create_ppe_codespace,test_createAndinstall
+from test_delete_codespace import test_deleteAllCodespace 
 
-# 8-core SouthEastAsia
+@pytest.mark.daily
+@pytest.mark.forwardport
+def test_delete_all_codespaces(playwright: Playwright):
+    test_deleteAllCodespace(playwright)
+
+@pytest.mark.daily
 @pytest.mark.forwardport
 def test_codespace_copyports(playwright: Playwright):
     tempurl="https://github.com/codespaces/new?location=SouthEastAsia"
@@ -47,7 +53,7 @@ def test_codespace_copyports(playwright: Playwright):
     finally:
         page.close()
 
-# 16-core WestEurope
+@pytest.mark.daily
 @pytest.mark.forwardport
 def test_codespace_openports(playwright: Playwright):
     tempurl="https://github.com/codespaces"
@@ -100,7 +106,8 @@ def test_codespace_openports(playwright: Playwright):
         page.wait_for_timeout(3000)
     finally:
         page.close()
-    
+
+@pytest.mark.daily
 @pytest.mark.forwardport   
 def test_codespace_openPublicPort(playwright: Playwright):
     tempurl="https://github.com/codespaces"
@@ -165,6 +172,7 @@ def test_codespace_openPublicPort(playwright: Playwright):
     finally:
         page.close()
 
+@pytest.mark.daily
 @pytest.mark.forwardport   
 def test_codespace_protocol_ports(playwright: Playwright):
     tempurl="https://github.com/codespaces"
@@ -213,6 +221,7 @@ def test_codespace_protocol_ports(playwright: Playwright):
     finally:
         page.close()
 
+@pytest.mark.daily
 @pytest.mark.forwardport   
 def test_codespace_forward_set_delete_ports(playwright: Playwright):
     tempurl="https://github.com/codespaces"

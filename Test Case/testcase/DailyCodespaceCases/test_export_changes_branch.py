@@ -3,6 +3,13 @@ import string
 import getpass
 from playwright.sync_api import Page, Playwright
 from test_commonmethod import test_open_page_sso,test_create_ppe_codespace,test_createAndinstall
+from test_delete_codespace import test_deleteAllCodespace 
+
+
+@pytest.mark.exportChanges
+def test_delete_all_codespaces(playwright: Playwright):
+    test_deleteAllCodespace(playwright)
+
 
 @pytest.mark.exportChanges
 def test_export_changes_to_fork(playwright: Playwright):
@@ -38,6 +45,7 @@ def test_export_changes_to_fork(playwright: Playwright):
     finally:
         page.close()
 
+
 @pytest.mark.exportChanges
 def test_export_changes_branch_active(playwright: Playwright):
     tempurl="https://github.com/codespaces"
@@ -55,6 +63,7 @@ def test_export_changes_branch_active(playwright: Playwright):
         page.wait_for_timeout(3000)
     finally:
         page.close()
+
 
 @pytest.mark.exportChanges
 def test_export_changes_branch_available_stopped(playwright: Playwright):
@@ -83,6 +92,7 @@ def test_export_changes_branch_available_stopped(playwright: Playwright):
         page.wait_for_timeout(3000)
     finally:
         page.close()
+
 
 @pytest.mark.exportChanges
 def test_export_changes_branch_being_connected(playwright: Playwright):

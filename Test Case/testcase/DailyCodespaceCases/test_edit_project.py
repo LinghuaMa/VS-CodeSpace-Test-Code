@@ -3,7 +3,14 @@ import string
 import getpass
 from playwright.sync_api import Page, Playwright
 from test_commonmethod import test_open_page_sso,test_create_ppe_codespace,test_createAndinstall
+from test_delete_codespace import test_deleteAllCodespace 
 
+@pytest.mark.daily
+@pytest.mark.editproject
+def test_delete_all_codespaces(playwright: Playwright):
+    test_deleteAllCodespace(playwright)
+
+@pytest.mark.daily
 @pytest.mark.editproject
 def test_debug_project(playwright: Playwright):
     pageurl="https://github.com/codespaces/new?location=SouthEastAsia"
@@ -30,7 +37,7 @@ def test_debug_project(playwright: Playwright):
     finally:
         page.close()
 
-
+@pytest.mark.daily
 @pytest.mark.editproject
 def test_add_change_search_project(playwright: Playwright):
     pageurl="https://github.com/codespaces"
@@ -87,6 +94,7 @@ def test_add_change_search_project(playwright: Playwright):
     finally:
         page.close()
 
+@pytest.mark.daily
 @pytest.mark.editproject
 def test_verify_remote_language_project(playwright: Playwright):
     pageurl="https://github.com/codespaces"
@@ -119,6 +127,7 @@ def test_verify_remote_language_project(playwright: Playwright):
     finally:
         page.close()
 
+@pytest.mark.daily
 @pytest.mark.editproject
 def test_install_extension_from_market(playwright: Playwright):
     pageurl="https://github.com/codespaces"
