@@ -4,7 +4,7 @@ from asyncio import sleep
 from playwright.sync_api import Page, Playwright, expect
 import re
 import getpass
-from test_commonmethod import test_open_page_sso,test_newtemplatepage
+from test_commonmethod import test_open_page_sso,test_newtemplatepage,test_create_ppe_codespace,test_open_page_sso
 
 @pytest.mark.delete
 def test_deleteAllCodespace(playwright: Playwright):
@@ -25,5 +25,3 @@ def test_deleteAllCodespace(playwright: Playwright):
     finally:
         page.wait_for_timeout(1500)
         page.close()
-
-
