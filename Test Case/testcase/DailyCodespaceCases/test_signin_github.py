@@ -103,7 +103,7 @@ def test_check_links_on_index_page(playwright: Playwright):
         page.go_back()
         page.locator("a", has_text="Blog").click()
         page.wait_for_timeout(2500)
-        assert "Highlights from Git" in page.text_content("h3")
+        assert "The GitHub Blog" in page.title()
         page.go_back()
         page.locator("a", has_text="About").click()
         page.wait_for_timeout(2500)
