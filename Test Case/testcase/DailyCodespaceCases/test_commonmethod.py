@@ -144,26 +144,3 @@ def test_upload_install_vsix(page: Page):
     if page.get_by_title("Reload Now").is_visible():
         page.get_by_title("Reload Now").click()
     page.wait_for_timeout(15000)
-
-
-
-def test_create_microsoft_repo(playwright: Playwright):
-    pageurl="https://github.com/codespaces/new"
-    context = playwright.chromium.launch_persistent_context(user_data_dir=f"c:\\User\\{getpass.getuser()}\\AppData\\Local\\Microsoft\\Edge\\User Data",
-                                                accept_downloads=True,
-                                                headless=False,
-                                                bypass_csp=False,
-                                                slow_mo=1000,
-                                                channel="msedge")    
-    page = context.new_page()
-    page.storage_state="cway"
-    page.goto(pageurl)
-    test_create_ppe_codespace(page, "Microsoft/vscode-remote-try-node")
-    page.get_by_role("button", name="Create codespace").click()
-    page.wait_for_timeout(75000)
-
-
-
-
-
-

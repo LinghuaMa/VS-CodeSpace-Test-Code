@@ -78,9 +78,11 @@ def test_repositorytempandexportcodespace(playwright: Playwright, nth: int, temp
     guid = uuid.uuid4().hex
     page.query_selector_all(publishreponameselector)[0].fill(tempname+guid)
     page.locator("button", has_text="Create repository").click()
-    page.wait_for_timeout(2000)
-    test_getgithubuserrepo(page, tempname+guid)
-    page.wait_for_timeout(3000)
+    page.wait_for_timeout(60000)
+    page.locator("button", has_text="See repository").click()
+    assert tempname+guid in page.title()
+    page.wait_for_timeout(500)
+    page.close()
 
 def test_addnewfileandnavigatetosoucontrol(page:Page):
     page.keyboard.press("Control+Shift+E")

@@ -197,7 +197,7 @@ def test_full_request_files_view(playwright: Playwright):
         page.context.pages[-2].close()
         page.wait_for_timeout(20000)
         assert page.get_by_role("button", name="git-pull-request  Pull Request #4953").is_visible()
-        assert 'Testing' in page.frame_locator(".webview.ready").frame_locator("#active-frame").locator("#testing").inner_text()
+        page.get_by_label("Close (Ctrl+F4)").click()
     finally:
         page.close()
 

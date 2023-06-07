@@ -54,10 +54,10 @@ def test_check_links_on_loading_interstitial(playwright: Playwright):
         page.wait_for_timeout(1000)
         page.locator("a", has_text="Learn more").click()
         assert page.context.pages[-1].get_by_role("link", name="GitHub Docs").is_visible()
-        page.wait_for_timeout(2000)
-        page.close()
-    finally:
         page.context.pages[-1].close()
+        page.wait_for_timeout(2000)     
+    finally:
+        page.close()
 
 @pytest.mark.daily
 @pytest.mark.signinOnportal
