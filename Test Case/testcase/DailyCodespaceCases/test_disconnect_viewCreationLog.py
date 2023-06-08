@@ -20,11 +20,19 @@ def test_disconnect_ViewCreationLog_codespace(playwright: Playwright):
         test_create_ppe_codespace(page, "Microsoft/vscode-remote-try-python")
         test_createAndinstall(page, "16-core")
         #View Creation Log command
+        page.wait_for_timeout(15000)
         page.keyboard.press("Control+Shift+P")
         page.keyboard.type("View Creation Log")
         page.keyboard.press("ArrowDown")
         page.keyboard.press("Enter")
         page.wait_for_timeout(1500)
+        if not page.get_by_role("tab").get_by_title("/workspaces/.codespaces/.persistedshare/creation.log").is_visible():
+            page.wait_for_timeout(4000)
+            page.keyboard.press("Control+Shift+P")
+            page.keyboard.type("View Creation Log")
+            page.keyboard.press("ArrowDown")
+            page.keyboard.press("Enter")
+            page.wait_for_timeout(1500)
         assert page.get_by_role("tab").get_by_title("/workspaces/.codespaces/.persistedshare/creation.log").is_visible()
         #disconnect codespace
         page.keyboard.press("Control+Shift+P")
@@ -35,7 +43,7 @@ def test_disconnect_ViewCreationLog_codespace(playwright: Playwright):
         page.get_by_role("tree").nth(0).hover()
         page.get_by_title("Disconnect").click()
         page.wait_for_timeout(1500)
-        assert 'Codespaces' in page.title()
+        assert 'https://github.com/codespaces/' in page.url
     finally:
         page.close()
 

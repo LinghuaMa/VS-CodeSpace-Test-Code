@@ -4,8 +4,9 @@ from asyncio import sleep
 from playwright.sync_api import Page, Playwright, expect
 import re
 import getpass
-from test_commonmethod import test_open_page_sso,test_newtemplatepage,test_create_ppe_codespace,test_open_page_sso
+from test_commonmethod import test_open_page_sso,test_open_page_sso
 
+#Do not run this case directly, beacase many cases called this method.
 @pytest.mark.delete
 def test_deleteAllCodespace(playwright: Playwright):
     tempurl="https://github.com/codespaces"

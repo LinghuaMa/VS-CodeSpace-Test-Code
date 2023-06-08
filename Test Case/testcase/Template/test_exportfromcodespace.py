@@ -7,47 +7,47 @@ from test_commoncode import test_newtemplatepage,test_terminalcommand,test_getgi
 
 #region Export/Publish from /Codespaces
 @pytest.mark.exporttemplate
-@pytest.mark.blanktemplate
+@pytest.mark.template
 def test_blanktemppublishcodespace(playwright: Playwright):
     test_repositorytempandexportcodespace(playwright, 0, "blank")
 
 @pytest.mark.exporttemplate
-@pytest.mark.reacttemplate
+@pytest.mark.template
 def test_reacttemppublishcodespace(playwright: Playwright):
     test_repositorytempandexportcodespace(playwright, 2, "react")
 
 @pytest.mark.exporttemplate
-@pytest.mark.railstemplate
+@pytest.mark.template
 def test_railstemppublishcodespace(playwright: Playwright):
     test_repositorytempandexportcodespace(playwright, 1, "rails")
 
 @pytest.mark.exporttemplate
-@pytest.mark.jupytertemplate
+@pytest.mark.template
 def test_jupytertemppublishcodespace(playwright: Playwright):
     test_repositorytempandexportcodespace(playwright, 3, "jupyter")
 
 @pytest.mark.exporttemplate
-@pytest.mark.expresstemplate
+@pytest.mark.template
 def test_expresstemppublishcodespace(playwright: Playwright):
     test_repositorytempandexportcodespace(playwright, 4, "express")
 
 @pytest.mark.exporttemplate
-@pytest.mark.nextjstemplate
+@pytest.mark.template
 def test_nextjstemppublishcodespace(playwright: Playwright):
     test_repositorytempandexportcodespace(playwright, 5, "nextjs")
 
 @pytest.mark.exporttemplate
-@pytest.mark.djangotemplate
+@pytest.mark.template
 def test_djangotemppublishcodespace(playwright: Playwright):
     test_repositorytempandexportcodespace(playwright, 6, "django")
 
 @pytest.mark.exporttemplate
-@pytest.mark.flasktemplate
+@pytest.mark.template
 def test_flasktemppublishcodespace(playwright: Playwright):
     test_repositorytempandexportcodespace(playwright, 7, "flask")
 
 @pytest.mark.exporttemplate
-@pytest.mark.preacttemplate
+@pytest.mark.template
 def test_preacttemppublishcodespace(playwright: Playwright):
     test_repositorytempandexportcodespace(playwright, 8, "preact")
 

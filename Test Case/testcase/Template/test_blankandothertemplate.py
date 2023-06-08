@@ -6,7 +6,8 @@ from playwright.async_api import Page, Playwright, Browser
 from test_commoncode import test_open_page_sso,test_getgithubuserrepo, test_terminalothertemplatecommand
 
 #region Blank Template
-@pytest.mark.blanktemplate
+@pytest.mark.template
+@pytest.mark.blankAndOther
 def test_create_blank_template_codespace(playwright: Playwright) -> None:
     new_page=chooseppeoption(playwright,"Blank")
     try:
@@ -34,35 +35,43 @@ def test_create_blank_template_codespace(playwright: Playwright) -> None:
 #endregion Blank Template
 
 #region Other Templates
-@pytest.mark.railstemplate
+@pytest.mark.template
+@pytest.mark.blankAndOther
 def test_rubyonrailstemplate(playwright: Playwright):
     test_othertempcodespace("Ruby on Rails", "rails\xa0server", playwright)
 
-@pytest.mark.reacttemplate
+@pytest.mark.template
+@pytest.mark.blankAndOther
 def test_reacttemplate(playwright: Playwright):
     test_othertempcodespace("React By github A pop", "npm\xa0start", playwright)
 
-@pytest.mark.jupytertemplate
+@pytest.mark.template
+@pytest.mark.blankAndOther
 def test_jupytertemplate(playwright: Playwright):
     test_othertempcodespace("Jupyter Notebook","npm\xa0start", playwright)
 
-@pytest.mark.expresstemplate
+@pytest.mark.template
+@pytest.mark.blankAndOther
 def test_expresstemplate(playwright: Playwright):
     test_othertempcodespace("Express","npm\xa0start", playwright)
 
-@pytest.mark.nextjstemplate
+@pytest.mark.template
+@pytest.mark.blankAndOther
 def test_nextjstemplate(playwright: Playwright):
     test_othertempcodespace("Next.js By github Next.js","npm\xa0run\xa0dev",playwright)
 
-@pytest.mark.djangotemplate
+@pytest.mark.template
+@pytest.mark.blankAndOther
 def test_djangotemplate(playwright: Playwright):
     test_othertempcodespace("Django","python\xa0manage.py\xa0runserver",playwright)
 
-@pytest.mark.flasktemplate
+@pytest.mark.template
+@pytest.mark.blankAndOther
 def test_flasktemplate(playwright: Playwright):
     test_othertempcodespace("Flask","flask\xa0--debug\xa0run",playwright)
 
-@pytest.mark.preacttemplate
+@pytest.mark.template
+@pytest.mark.blankAndOther
 def test_preacttemplate(playwright: Playwright):
     test_othertempcodespace("Preact By github A fast","npm\xa0run\xa0dev",playwright)
 

@@ -6,47 +6,47 @@ from playwright.async_api import Page, Playwright, Browser
 from test_commoncode import test_newtemplatepage,test_terminalcommand,test_getusenamefromcookiefile
 
 #region Repository Templates
-@pytest.mark.blanktemplate
+@pytest.mark.template
 def test_blankOpenInCodespace(playwright: Playwright):
     blankrepotemp="codespaces-blank"
     test_open_in_codespace(playwright, blankrepotemp)
 
-@pytest.mark.railstemplate
+@pytest.mark.template
 def test_railsOpenInCodespace(playwright: Playwright):
     railsrepotemp="codespaces-rails"
     test_open_in_codespace(playwright, railsrepotemp)
 
-@pytest.mark.reacttemplate
+@pytest.mark.template
 def test_reactOpenInCodespace(playwright: Playwright):
     reactrepotemp="codespaces-react"
     test_open_in_codespace(playwright, reactrepotemp)
 
-@pytest.mark.jupytertemplate
+@pytest.mark.template
 def test_jupyterOpenInCodespace(playwright: Playwright):
     jupyterrepotemp="codespaces-jupyter"
     test_open_in_codespace(playwright, jupyterrepotemp)
 
-@pytest.mark.expresstemplate
+@pytest.mark.template
 def test_expressOpenInCodespace(playwright: Playwright):
     expressrepotemp="codespaces-express"
     test_open_in_codespace(playwright, expressrepotemp)
 
-@pytest.mark.djangotemplate
+@pytest.mark.template
 def test_djangoOpenInCodespace(playwright: Playwright):
     djangorepotemp="codespaces-django"
     test_open_in_codespace(playwright, djangorepotemp)
 
-@pytest.mark.nextjstemplate
+@pytest.mark.template
 def test_nextjsOpenInCodespace(playwright: Playwright):
     nextjsrepotemp="codespaces-nextjs"
     test_open_in_codespace(playwright, nextjsrepotemp)
 
-@pytest.mark.flasktemplate
+@pytest.mark.template
 def test_flaskOpenInCodespace(playwright: Playwright):
     flaskrepotemp="codespaces-flask"
     test_open_in_codespace(playwright, flaskrepotemp)
 
-@pytest.mark.preacttemplate
+@pytest.mark.template
 def test_preactOpenInCodespace(playwright: Playwright):
     preactrepotemp="codespaces-preact"
     test_open_in_codespace(playwright, preactrepotemp)
@@ -77,47 +77,47 @@ def test_validatepublishbutton(codespace_page: Page, repotemp: string):
 #endregion Repository Templates
 
 #region User this template--create in a new repository
-@pytest.mark.blanktemplate
+@pytest.mark.template
 def test_blankTemplates_create_repo(playwright: Playwright):
     blankrepotemp="codespaces-blank"
     test_create_new_repository(playwright, blankrepotemp)
 
-@pytest.mark.railstemplate
+@pytest.mark.template
 def test_railsRepositoryTemplates(playwright: Playwright):
     railsrepotemp="codespaces-rails"
     test_create_new_repository(playwright, railsrepotemp)
 
-@pytest.mark.reacttemplate
+@pytest.mark.template
 def test_reactRepositoryTemplates(playwright: Playwright):
     reactrepotemp="codespaces-react"
     test_create_new_repository(playwright, reactrepotemp)
 
-@pytest.mark.jupytertemplate
+@pytest.mark.template
 def test_jupyterRepositoryTemplates(playwright: Playwright):
     jupyterrepotemp="codespaces-jupyter"
     test_create_new_repository(playwright, jupyterrepotemp)
 
-@pytest.mark.expresstemplate
+@pytest.mark.template
 def test_expressRepositoryTemplates(playwright: Playwright):
     expressrepotemp="codespaces-express"
     test_create_new_repository(playwright, expressrepotemp)
 
-@pytest.mark.djangotemplate
+@pytest.mark.template
 def test_djangoRepositoryTemplates(playwright: Playwright):
     djangorepotemp="codespaces-django"
     test_create_new_repository(playwright, djangorepotemp)
 
-@pytest.mark.nextjstemplate
+@pytest.mark.template
 def test_nextjsRepositoryTemplates(playwright: Playwright):
     nextjsrepotemp="codespaces-nextjs"
     test_create_new_repository(playwright, nextjsrepotemp)
 
-@pytest.mark.flasktemplate
+@pytest.mark.template
 def test_flaskRepositoryTemplates(playwright: Playwright):
     flaskrepotemp="codespaces-flask"
     test_create_new_repository(playwright, flaskrepotemp)
 
-@pytest.mark.preacttemplate
+@pytest.mark.template
 def test_preactRepositoryTemplates(playwright: Playwright):
     preactrepotemp="codespaces-preact"
     test_create_new_repository(playwright, preactrepotemp)

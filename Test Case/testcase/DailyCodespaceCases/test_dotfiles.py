@@ -59,7 +59,7 @@ def test_enable_autimaticlly_donot_executable_script(playwright: Playwright):
         page.get_by_title("Kill (Delete)").nth(1).click()
         cdpath="cd ~"
         labelname="Terminal 4, bash"
-        atfiles="./.config/.gemrc@.icons@.oh-my-zsh/.travis.yml@../.config_dotfiles_default@.git-templates@.inputrc@.osx@.vim@.IGNORE@.curlrc@.gitattributes@.irbrc@.php/.vimrc@.ackrc@.dircolors@.gitconfig@.jupyter/.profile.vimrc.bundles@.aliases@.docker@.gitignore@.load@.python/.vscode-remote/.bash_complete@.dotfilecheck@.gitignore_global@.local/.rbenv/.wgetrc@.bash_logout@.dotnet@.gitmessage@.macos@.redpill@.xbindkeysrc@.bash_profile@.editorconfig@.global_gitignore@.maven/.ruby/.yarn/.bashrc@.exports@.gvimrc@.minikube/.rvmrc.zprofile@.cache/.fonts@.hgignore@.minttyrc@.screenrc@.zshrc@.colordiffrc@.functions@.hugo/.npm/.shellrc@java@.colors@.gdbinit@.hushlogin@.nvs/.tmux.conf@nvm@"
+        atfiles='./.config/.git-templates@.irbrc@.profile.vscode-remote/../.config_dotfiles_default@.gitattributes@.jupyter/.python/.wgetrc@.IGNORE@.curlrc@.gitconfig@.load@.rbenv/.xbindkeysrc@.ackrc@.dircolors@.gitignore@.local/.redpill@.yarn/.aliases@.docker@.gitignore_global@.macos@.ruby/.zprofile@.bash_complete@.dotfilecheck@.gitmessage@.maven/.rvmrc.zshrc@.bash_history.dotnet@.global_gitignore@.minikube/.screenrc@java@.bash_logout@.editorconfig@.gvimrc@.minttyrc@.shellrc@nvm@.bash_profile@.exports@.hgignore@.npm/.tmux.conf@.bashrc@.fonts@.hugo/.nvs/.travis.yml@.cache/.functions@.hushlogin@.oh-my-zsh/.vim@.colordiffrc@.gdbinit@.icons@.osx@.vimrc@.colors@.gemrc@.inputrc@.php/.vimrc.bundles@'
         test_execute_command(page,labelname ,cdpath, atfiles) 
     finally:
         page.goto("https://github.com/settings/codespaces")

@@ -39,55 +39,55 @@ def test_change_option_create_ppe_codespace(playwright:Playwright, tempurl: stri
     page.close()
 
 @pytest.mark.vanityURLs
-@pytest.mark.blanktemplate
+@pytest.mark.template
 def test_changeoptions_blankVanityURLs(playwright: Playwright):
     blanktempurl="https://github.com/codespaces/new?template=blank"
     test_change_option_create_ppe_codespace(playwright, blanktempurl, "16-core")
 
 @pytest.mark.vanityURLs
-@pytest.mark.reacttemplate
+@pytest.mark.template
 def test_changeoptions_reactVanityURLs(playwright: Playwright):
     reacttempurl="https://github.com/codespaces/new?template=react"
     test_change_option_create_ppe_codespace(playwright, reacttempurl, "8-core")
 
 @pytest.mark.vanityURLs
-@pytest.mark.railstemplate
+@pytest.mark.template
 def test_changeoptions_railsVanityURLs(playwright: Playwright):
     railstempurl="https://github.com/codespaces/new?template=rails"
     test_change_option_create_ppe_codespace(playwright, railstempurl, "4-core")
 
 @pytest.mark.vanityURLs
-@pytest.mark.jupytertemplate
+@pytest.mark.template
 def test_changeoptions_jupyterVanityURLs(playwright: Playwright):
     jupytertempurl="https://github.com/codespaces/new?template=jupyter"
     test_change_option_create_ppe_codespace(playwright, jupytertempurl, "4-core")
 
 @pytest.mark.vanityURLs
-@pytest.mark.expresstemplate
+@pytest.mark.template
 def test_changeoptions_expressVanityURLs(playwright: Playwright):
     expresstempurl="https://github.com/codespaces/new?template=express"
     test_change_option_create_ppe_codespace(playwright, expresstempurl, "4-core")
 
 @pytest.mark.vanityURLs
-@pytest.mark.nextjstemplate
+@pytest.mark.template
 def test_changeoptions_nextjsVanityURLs(playwright: Playwright):
     nextjstempurl="https://github.com/codespaces/new?template=nextjs"
     test_change_option_create_ppe_codespace(playwright, nextjstempurl, "4-core")
 
 @pytest.mark.vanityURLs
-@pytest.mark.djangotemplate
+@pytest.mark.template
 def test_changeoptions_djangoVanityURLs(playwright: Playwright):
     djangotempurl="https://github.com/codespaces/new?template=django"
     test_change_option_create_ppe_codespace(playwright, djangotempurl, "4-core")
 
 @pytest.mark.vanityURLs
-@pytest.mark.flasktemplate
+@pytest.mark.template
 def test_changeoptions_flaskVanityURLs(playwright: Playwright):
     flasktempurl="https://github.com/codespaces/new?template=flask"
     test_change_option_create_ppe_codespace(playwright, flasktempurl, "4-core")
 
 @pytest.mark.vanityURLs
-@pytest.mark.preacttemplate
+@pytest.mark.template
 def test_changeoptions_preactVanityURLs(playwright: Playwright):
     preacttempurl="https://github.com/codespaces/new?template=preact"
     test_change_option_create_ppe_codespace(playwright, preacttempurl, "8-core")
@@ -114,55 +114,55 @@ def test_create_production_codespace(playwright: Playwright, tempurl: string):
     page.close()
 
 @pytest.mark.vanityURLs
-@pytest.mark.blanktemplate
+@pytest.mark.template
 def test_new_blankVanityURLs(playwright: Playwright):
     blanktempurl="https://github.com/codespaces/new?template=blank"
     test_create_production_codespace(playwright, blanktempurl)
 
 @pytest.mark.vanityURLs
-@pytest.mark.reacttemplate
+@pytest.mark.template
 def test_new_reactVanityURLs(playwright: Playwright):
     reacttempurl="https://github.com/codespaces/new?template=react"
     test_create_production_codespace(playwright, reacttempurl)
 
 @pytest.mark.vanityURLs
-@pytest.mark.railstemplate
+@pytest.mark.template
 def test_new_railsVanityURLs(playwright: Playwright):
     railstempurl="https://github.com/codespaces/new?template=rails"
     test_create_production_codespace(playwright, railstempurl)
 
 @pytest.mark.vanityURLs
-@pytest.mark.jupytertemplate
+@pytest.mark.template
 def test_new_jupyterVanityURLs(playwright: Playwright):
     jupytertempurl="https://github.com/codespaces/new?template=jupyter"
     test_create_production_codespace(playwright, jupytertempurl)
 
 @pytest.mark.vanityURLs
-@pytest.mark.expresstemplate
+@pytest.mark.template
 def test_new_expressVanityURLs(playwright: Playwright):
     expresstempurl="https://github.com/codespaces/new?template=express"
     test_create_production_codespace(playwright, expresstempurl)
 
 @pytest.mark.vanityURLs
-@pytest.mark.nextjstemplate
+@pytest.mark.template
 def test_new_nextjsVanityURLs(playwright: Playwright):
     nextjstempurl="https://github.com/codespaces/new?template=nextjs"
     test_create_production_codespace(playwright, nextjstempurl)
 
 @pytest.mark.vanityURLs
-@pytest.mark.djangotemplate
+@pytest.mark.template
 def test_new_djangoVanityURLs(playwright: Playwright):
     djangotempurl="https://github.com/codespaces/new?template=django"
     test_create_production_codespace(playwright, djangotempurl)
 
 @pytest.mark.vanityURLs
-@pytest.mark.flasktemplate
+@pytest.mark.template
 def test_new_flaskVanityURLs(playwright: Playwright):
     flasktempurl="https://github.com/codespaces/new?template=flask"
     test_create_production_codespace(playwright, flasktempurl)
 
 @pytest.mark.vanityURLs
-@pytest.mark.preacttemplate
+@pytest.mark.template
 def test_new_preactVanityURLs(playwright: Playwright):
     preacttempurl="https://github.com/codespaces/new?template=preact"
     test_create_production_codespace(playwright, preacttempurl)
@@ -170,11 +170,13 @@ def test_new_preactVanityURLs(playwright: Playwright):
 
 #region Slightly-less-vanity URLs 
 @pytest.mark.vanityURLs
+@pytest.mark.template
 def test_haikusSlightlylessvanityURLs(playwright: Playwright):
     codespacesurl="https://github.com/codespaces/new?template_repository=github/haikus-for-codespaces"
     test_change_option_create_ppe_codespace(playwright, codespacesurl, "4-core")
 
 @pytest.mark.vanityURLs
+@pytest.mark.template
 def test_new_haikusSlightlylessvanityURLs(playwright: Playwright):
     tempurl="https://github.com/codespaces/new?template_repository=github/haikus-for-codespaces"
     test_create_production_codespace(playwright, tempurl) 
